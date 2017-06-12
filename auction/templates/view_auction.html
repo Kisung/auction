@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>{{ auction.title }}</h1>
+
+<p>{{ auction.description }}</p>
+
+<form class="ui form" (ngSubmit)="onSubmit()">
+  <input type="hidden" name="auction_id" value="{{ auction.id }}"/>
+  <div class="field">
+    <label>Name</label>
+    <input type="text" name="name" placeholder="Name">
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input type="text" name="email" placeholder="Email">
+  </div>
+  <div class="field">
+    <label>Price</label>
+    <input type="text" name="price" placeholder="1000">
+  </div>
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0" class="hidden">
+      <label>I agree to the Terms and Conditions</label>
+    </div>
+  </div>
+  <button class="ui button" type="submit">Submit</button>
+</form>
+{% endblock %}
