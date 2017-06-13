@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from flask import Blueprint, redirect, render_template, request, url_for
 
@@ -40,7 +41,7 @@ def create_bid():
             # TODO: Show this message with a template
             return 'The auction has ended', 403
 
-        Bid.create(
+        bid = Bid.create(
             auction_id=auction_id,
             name=request.form['name'],
             email=request.form['email'],
@@ -48,6 +49,7 @@ def create_bid():
             bids_at=datetime.utcnow(),
             confirmation_code=Bid.generate_confirmation_code(),
         )
+        bid.send_confirmation_email()
         return redirect(
             url_for('main.view_auction_bids', auction_id=auction.id))
 
@@ -58,8 +60,41 @@ def create_bid():
     return render_template('create_bid.html', **context)
 
 
+@main_module.route('/bid/<int:bid_id>/confirm')
+def confirm_bid(bid_id):
+    code = request.args.get('code')
+    bid = Bid.query.get_or_404(bid_id)
+
+    # FIXME: Maybe we should flatten the following if-else statements
+    if code:
+        if code == bid.confirmation_code:
+            if bid.confirmed:
+                # FIXME: Is 400 okay?
+                return 'Bid already confirmed', 400
+            else:
+                bid.mark_as_confirmed()
+                return redirect(url_for('main.view_auction_bids',
+                                        auction_id=bid.auction.id))
+        else:
+            # FIXME: Is 404 okay?
+            return 'Invalid confirmation code', 404
+    else:
+        # TODO: Show a page to manually enter the code
+        return render_confirmation_email(bid)
+
+
 def parse_price(value, currency='KRW'):
     if currency == 'KRW':
         return int(value)
     else:
         raise NotImplementedError
+
+
+def render_confirmation_email(bid):
+    context = {
+        'bid': bid,
+        'host': os.environ['AUCTION_HOST'],
+        'link': os.environ['AUCTION_HOST'] + url_for(
+            'main.confirm_bid', bid_id=bid.id, code=bid.confirmation_code)
+    }
+    return render_template('bidding_confirmation.html', **context)

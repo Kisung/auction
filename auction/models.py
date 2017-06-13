@@ -1,9 +1,11 @@
 from datetime import datetime
 import heapq
+import os
 from random import randint
 
 import base62
 from bs4 import BeautifulSoup
+import boto3
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
@@ -207,3 +209,37 @@ class Bid(CRUDMixin, db.Model):
             return current_price
         else:
             return self.price
+
+    def mark_as_confirmed(self):
+        self.confirmed_at = datetime.utcnow()
+        db.session.commit()
+
+    def send_confirmation_email(self):
+        from auction.main import render_confirmation_email
+        html = render_confirmation_email(self)
+
+        # NOTE: as of June 13, 2017, SES is only supported in the following
+        # regions:
+        # - eu-west-1 (Ireland)
+        # - us-east-1 (Virginia)
+        # - us-west-2 (Oregon)
+        client = boto3.client('ses', region_name='us-west-2')
+        client.send_email(**{
+            'Source': os.environ['AUCTION_EMAIL_MASTER'],
+            'Destination': {
+                'ToAddresses': [self.email]
+            },
+            'Message': {
+                'Subject': {
+                    'Data': 'Bidding confirmation',
+                    'Charset': 'utf-8'
+                },
+                'Body': {
+                    'Html': {
+                        'Data': html,
+                        'Charset': 'utf-8'
+                    }
+                }
+            }
+        })
+>>>>>>> Sends a confirmation email
