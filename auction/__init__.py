@@ -2,7 +2,6 @@ import os
 import sys
 
 from flask import Flask
-from flask_cors import CORS
 from logbook import Logger, StreamHandler
 
 
@@ -26,8 +25,6 @@ def create_app(name=__name__, config={},
     app.config['DEBUG'] = bool(os.environ.get('DEBUG', False))
 
     app.config.update(config)
-
-    # CORS(app, resources={r'*': {'origins': '*'}})
 
     from auction.models import db
     db.init_app(app)
