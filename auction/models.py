@@ -1,4 +1,6 @@
 from datetime import datetime
+from decimal import Decimal
+import heapq
 from random import randint
 
 import base62
@@ -73,7 +75,49 @@ class Auction(CRUDMixin, db.Model):
     begins_at = db.Column(db.DateTime(timezone=False))
     ends_at = db.Column(db.DateTime(timezone=False))
 
+    starting_price = Decimal(1000)
+
     bids = db.relationship('Bid', backref='auction', lazy='dynamic')
+
+    @classmethod
+    def bidding_price_unit(cls, price):
+        """Determines an increment of a bidding price given a price.
+
+        See more details: https://www.miraeassetdaewoo.com/hki/hki3061/n65.do
+        """
+        if price < 1000:
+            return 1
+        elif price < 5000:
+            return 5
+        elif price < 10000:
+            return 10
+        elif price < 50000:
+            return 50
+        elif price < 100000:
+            return 100
+        elif price < 500000:
+            return 500
+        else:
+            return 1000
+
+    @property
+    def confirmed_bids(self):
+        """FIXME: This may have some negative performance impact."""
+        return [x for x in self.bids if x.confirmed]
+
+    @property
+    def current_price(self):
+        prices = [x.price for x in self.confirmed_bids]
+        if len(prices) == 0:
+            return self.starting_price
+        elif len(prices) == 1:
+            return prices[0]
+        else:
+            first, second = heapq.nlargest(2, prices)
+            if first == second:
+                return first
+            else:
+                return second + self.bidding_price_unit(second)
 
 
 class Bid(CRUDMixin, db.Model):
@@ -102,3 +146,8 @@ class Bid(CRUDMixin, db.Model):
         """Generates a random code."""
         code = randint(0x100000000000, 0xffffffffffff)
         return base62.encode(code)
+
+    @property
+    def confirmed(self):
+        """Indicates whether the bid has been confirmed."""
+        return self.confirmed_at is not None
