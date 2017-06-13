@@ -30,7 +30,7 @@ def make_auction(title):
         now = datetime.utcnow()
         auction = Auction.create(
             title=title,
-            begins_at=now,
+            starts_at=now,
             ends_at=now + timedelta(minutes=30),
         )
 

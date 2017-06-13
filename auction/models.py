@@ -71,8 +71,7 @@ class Auction(CRUDMixin, db.Model):
 
     title = db.Column(db.String)
     description = db.Column(db.Text)
-    # starts_at? begins_at?
-    begins_at = db.Column(db.DateTime(timezone=False))
+    starts_at = db.Column(db.DateTime(timezone=False))
     ends_at = db.Column(db.DateTime(timezone=False))
 
     starting_price = 1000
