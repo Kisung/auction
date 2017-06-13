@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, redirect, render_template, request
+from flask import Blueprint, redirect, render_template, request, url_for
 
 from auction.forms import BidForm
 from auction.models import Auction, Bid
@@ -51,10 +51,7 @@ def create_bid():
         confirmation_code=Bid.generate_confirmation_code(),
     )
 
-    if request.referrer:
-        return redirect(request.referrer)
-    else:
-        return ''
+    return redirect(url_for('main.view_auction', auction_id=auction.id))
 
 
 def parse_price(value, currency='KRW'):
