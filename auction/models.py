@@ -104,8 +104,7 @@ class Auction(CRUDMixin, db.Model):
 
     @property
     def confirmed_bids(self):
-        """FIXME: This may have some negative performance impact."""
-        return [x for x in self.bids if x.confirmed]
+        return self.bids.filter(Bid.confirmed_at != None)  # noqa
 
     @property
     def current_price(self):
