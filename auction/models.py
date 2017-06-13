@@ -156,3 +156,8 @@ class Bid(CRUDMixin, db.Model):
     def confirmed(self):
         """Indicates whether the bid has been confirmed."""
         return self.confirmed_at is not None
+
+    @property
+    def censored_email(self):
+        username, domain = self.email.split('@')
+        return '{}...@{}'.format(username[:3], domain)

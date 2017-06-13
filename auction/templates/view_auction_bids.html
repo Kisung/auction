@@ -19,7 +19,7 @@ Current price: {{ auction.current_price }}
     {%- for bid in auction.ordered_bids %}
     <tr class="{{ '' if bid.confirmed else 'disabled' }}">
       <td>{{ bid.bids_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-      <td>{{ bid.email }}</td>
+      <td>{{ bid.censored_email }}</td>
       <td>
         <i class="icon {{ 'checkmark' if bid.confirmed else 'attention' }}"></i>
         {{ bid.price }}
