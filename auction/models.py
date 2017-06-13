@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 import heapq
 from random import randint
 
@@ -72,10 +71,11 @@ class Auction(CRUDMixin, db.Model):
 
     title = db.Column(db.String)
     description = db.Column(db.Text)
+    # starts_at? begins_at?
     begins_at = db.Column(db.DateTime(timezone=False))
     ends_at = db.Column(db.DateTime(timezone=False))
 
-    starting_price = Decimal(1000)
+    starting_price = 1000
 
     bids = db.relationship('Bid', backref='auction', lazy='dynamic')
 
@@ -131,7 +131,7 @@ class Bid(CRUDMixin, db.Model):
     email = db.Column(db.String)
 
     #: Maximum bidding price
-    price = db.Column(db.Float(asdecimal=True))
+    price = db.Column(db.Integer)
 
     #: This will be used to determine earlier bids in case of a conflict
     bids_at = db.Column(db.DateTime(timezone=False))
