@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% macro render_field(field) %}
+  <div class="field">
+    {{ field.label }}
+  {{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    {% for error in field.errors %}
+    <div class="ui pointing red basic label">
+      {{ error }}
+    </div>
+    {% endfor %}
+  {% endif %}
+  </div>
+{% endmacro %}
+
+{% block content %}
+
+<h1>Bidding for {{ auction.title }}</h1>
+
+<!-- TODO: Protections against XSS forgery -->
+
+<form class="ui form" method="post"
+  action="{{ url_for('main.create_bid', auction_id=auction.id) }}">
+  <input type="hidden" name="auction_id" value="{{ auction.id }}"/>
+
+  {{ render_field(form.name, placeholder='이름') }}
+
+  {{ render_field(form.email, placeholder='이메일') }}
+
+  {{ render_field(form.price, placeholder='1000') }}
+
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0">
+      <label>경매 규칙을  모두 이해하였으며 이에 동의합니다.</label>
+    </div>
+  </div>
+  <button class="ui button primary" type="submit">Submit</button>
+  <a href="{{ url_for('main.view_auction', auction_id=auction.id) }}"
+    class="ui button">Cancel</a>
+</form>
+
+{% endblock %}

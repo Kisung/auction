@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>{{ auction.title }}</h1>
+
+<p>{{ auction.description }}</p>
+
+<a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
+  class="ui button primary">입찰하기</a>
+<a href="{{ url_for('main.view_auction_bids', auction_id=auction.id) }}"
+  class="ui button">진행 상황 보기</a>
+
+{% endblock %}

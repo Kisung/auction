@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h1>{{ auction.title }}</h1>
+
+Current price: {{ auction.current_price }}
+
+<h2>Bids</h2>
+
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Email</th>
+      <th>Bidding Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {%- for bid in auction.ordered_bids %}
+    <tr class="{{ '' if bid.confirmed else 'disabled' }}">
+      <td>{{ bid.bids_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+      <td>{{ bid.censored_email }}</td>
+      <td>
+        <i class="icon {{ 'checkmark' if bid.confirmed else 'attention' }}"></i>
+        {{ bid.price }}
+      </td>
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

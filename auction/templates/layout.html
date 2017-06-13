@@ -2,14 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Frontend</title>
-  <base href="/">
+  <title>Auction</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" type="text/css" href="./assets/semantic/dist/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/semantic/dist/semantic.min.css">
   <style>
-		.main.container {
+		.content {
 			margin-top: 4em;
     }
   </style>
@@ -26,8 +25,10 @@
 		</div>
   </div>
 
-	<div class="ui main text container">
-		<app-root>Loading...</app-root>
-	</div>
+  <div class="ui container content">
+    {%- block content %}{% endblock %}
+  </div>
+
 </body>
 </html>
+

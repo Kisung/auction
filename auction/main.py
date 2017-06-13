@@ -1,47 +1,61 @@
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, redirect, render_template, request, url_for
 
+from auction.forms import BidForm
 from auction.models import Auction, Bid
 
 
 main_module = Blueprint('main', __name__, template_folder='templates')
 
 
-@main_module.route('/')
-def index():
-    pass
-
-
 @main_module.route('/auction/<int:auction_id>')
 def view_auction(auction_id):
-    auction = Auction.query.get(auction_id)
+    auction = Auction.query.get_or_404(auction_id)
+    form = BidForm()
+    context = {
+        'auction': auction,
+        'form': form,
+    }
+    return render_template('view_auction.html', **context)
 
-    return jsonify(dict(auction))
+
+@main_module.route('/auction/<int:auction_id>/bids')
+def view_auction_bids(auction_id):
+    auction = Auction.query.get_or_404(auction_id)
+    context = {
+        'auction': auction,
+    }
+    return render_template('view_auction_bids.html', **context)
 
 
-@main_module.route('/bid', methods=['GET'])
-def get_bids():
+@main_module.route('/bid', methods=['GET', 'POST'])
+def create_bid():
     auction_id = int(request.args['auction_id'])
-    bids = Bid.query.filter(Bid.auction_id == auction_id)
+    auction = Auction.query.get_or_404(auction_id)
 
-    return jsonify(bids=[dict(x) for x in bids])
+    form = BidForm(request.form, auction, auction=auction)
+    if request.method == 'POST' and form.validate():
+        Bid.create(
+            auction_id=auction_id,
+            name=request.form['name'],
+            email=request.form['email'],
+            price=parse_price(request.form['price']),
+            bids_at=datetime.utcnow(),
+            confirmation_code=Bid.generate_confirmation_code(),
+        )
+        return redirect(
+            url_for('main.view_auction_bids', auction_id=auction.id))
+
+    context = {
+        'auction': auction,
+        'form': form,
+    }
+    return render_template('create_bid.html', **context)
 
 
-@main_module.route('/bid', methods=['POST'])
-def make_bid():
-    bid = Bid.create(
-        auction_id=int(request.json['auction_id']),
-        name=request.json['name'],
-        email=request.json['email'],
-        price=request.json['price'],
-        bids_at=datetime.utcnow(),
-        confirmation_code=Bid.generate_confirmation_code(),
-    )
-
-    return jsonify(dict(bid))
-
-
-@main_module.route('/bid/<int:bid_id>/confirm', methods=['POST'])
-def confirm_bid(bid_id):
-    pass
+def parse_price(value, currency='KRW'):
+    if currency == 'KRW':
+        return int(value)
+    else:
+        raise NotImplementedError

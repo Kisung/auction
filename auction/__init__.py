@@ -2,7 +2,6 @@ import os
 import sys
 
 from flask import Flask
-from flask_cors import CORS
 from logbook import Logger, StreamHandler
 
 
@@ -16,10 +15,9 @@ log = Logger('auction')
 
 
 def create_app(name=__name__, config={},
-               static_folder='../frontend/dist', template_folder='templates'):
+               static_folder='assets', template_folder='templates'):
 
     app = Flask(name, static_folder=static_folder,
-                static_url_path='',
                 template_folder=template_folder)
     app.secret_key = os.environ.get('SECRET', 'secret')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
@@ -28,16 +26,17 @@ def create_app(name=__name__, config={},
 
     app.config.update(config)
 
-    CORS(app, resources={r'*': {'origins': '*'}})
-
     from auction.models import db
     db.init_app(app)
 
     from auction.main import main_module
-    app.register_blueprint(main_module, url_prefix='/api/v1')
+    app.register_blueprint(main_module, url_prefix='')
 
-    @app.route('/')
-    def root():
-        return app.send_static_file('index.html')
+    from auction.api import api_module
+    app.register_blueprint(api_module, url_prefix='/api/v1')
+
+    # @app.route('/')
+    # def root():
+    #     return app.send_static_file('index.html')
 
     return app
