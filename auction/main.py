@@ -29,29 +29,29 @@ def view_auction_bids(auction_id):
     return render_template('view_auction_bids.html', **context)
 
 
-@main_module.route('/bid', methods=['POST'])
+@main_module.route('/bid', methods=['GET', 'POST'])
 def create_bid():
-    auction_id = int(request.form['auction_id'])
+    auction_id = int(request.args['auction_id'])
     auction = Auction.query.get_or_404(auction_id)
 
-    form = BidForm(request.form, auction=auction)
-    if not form.validate():
-        context = {
-            'auction': auction,
-            'form': form,
-        }
-        return render_template('view_auction.html', **context)
+    form = BidForm(request.form, auction, auction=auction)
+    if request.method == 'POST' and form.validate():
+        Bid.create(
+            auction_id=auction_id,
+            name=request.form['name'],
+            email=request.form['email'],
+            price=parse_price(request.form['price']),
+            bids_at=datetime.utcnow(),
+            confirmation_code=Bid.generate_confirmation_code(),
+        )
+        return redirect(
+            url_for('main.view_auction_bids', auction_id=auction.id))
 
-    Bid.create(
-        auction_id=auction_id,
-        name=request.form['name'],
-        email=request.form['email'],
-        price=parse_price(request.form['price']),
-        bids_at=datetime.utcnow(),
-        confirmation_code=Bid.generate_confirmation_code(),
-    )
-
-    return redirect(url_for('main.view_auction', auction_id=auction.id))
+    context = {
+        'auction': auction,
+        'form': form,
+    }
+    return render_template('create_bid.html', **context)
 
 
 def parse_price(value, currency='KRW'):

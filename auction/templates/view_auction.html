@@ -1,55 +1,12 @@
 {% extends 'layout.html' %}
-
-{% macro render_field(field) %}
-  <div class="field">
-    {{ field.label }}
-  {{ field(**kwargs)|safe }}
-  {% if field.errors %}
-    {% for error in field.errors %}
-    <div class="ui pointing red basic label">
-      {{ error }}
-    </div>
-    {% endfor %}
-  {% endif %}
-  </div>
-{% endmacro %}
-
 {% block content %}
 <h1>{{ auction.title }}</h1>
 
 <p>{{ auction.description }}</p>
 
-<!-- TODO: Protections against XSS forgery -->
+<a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
+  class="ui button primary">입찰하기</a>
+<a href="{{ url_for('main.view_auction_bids', auction_id=auction.id) }}"
+  class="ui button">진행 상황 보기</a>
 
-<form class="ui form" method="post" action="{{ url_for('main.create_bid') }}">
-  <input type="hidden" name="auction_id" value="{{ auction.id }}"/>
-
-  {{ render_field(form.name, placeholder='이름') }}
-
-  {{ render_field(form.email, placeholder='이메일') }}
-
-  {{ render_field(form.price, placeholder='1000') }}
-
-  <!--
-  <div class="field">
-    <label>Name</label>
-    <input type="text" name="name" placeholder="Name">
-  </div>
-  <div class="field">
-    <label>Email</label>
-    <input type="text" name="email" placeholder="Email">
-  </div>
-  <div class="field">
-    <label>Price</label>
-    <input type="text" name="price" placeholder="1000">
-  </div>
-  <div class="field">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden">
-      <label>I agree to the Terms and Conditions</label>
-    </div>
-  </div>
-  -->
-  <button class="ui button" type="submit">Submit</button>
-</form>
 {% endblock %}
