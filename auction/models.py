@@ -103,6 +103,10 @@ class Auction(CRUDMixin, db.Model):
         return len(self.bids.all()) > 0
 
     @property
+    def ordered_bids(self):
+        return self.bids.order_by(Bid.price.desc(), Bid.bids_at)
+
+    @property
     def confirmed_bids(self):
         return self.bids.filter(Bid.confirmed_at != None)  # noqa
 

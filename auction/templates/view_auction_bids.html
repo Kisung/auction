@@ -16,11 +16,14 @@ Current price: {{ auction.current_price }}
     </tr>
   </thead>
   <tbody>
-    {%- for bid in auction.bids %}
-    <tr>
+    {%- for bid in auction.ordered_bids %}
+    <tr class="{{ '' if bid.confirmed else 'disabled' }}">
       <td>{{ bid.bids_at }}</td>
       <td>{{ bid.email }}</td>
-      <td>{{ bid.price }}</td>
+      <td>
+        <i class="icon {{ 'checkmark' if bid.confirmed else 'attention' }}"></i>
+        {{ bid.price }}
+      </td>
     </tr>
     {%- endfor %}
   </tbody>
