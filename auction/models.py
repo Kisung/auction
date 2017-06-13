@@ -99,6 +99,9 @@ class Auction(CRUDMixin, db.Model):
         else:
             return 1000
 
+    def has_bidding(self):
+        return len(self.bids.all()) > 0
+
     @property
     def confirmed_bids(self):
         """FIXME: This may have some negative performance impact."""

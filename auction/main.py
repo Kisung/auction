@@ -32,10 +32,10 @@ def view_auction_bids(auction_id):
 @main_module.route('/bid', methods=['POST'])
 def create_bid():
     auction_id = int(request.form['auction_id'])
+    auction = Auction.query.get_or_404(auction_id)
 
-    form = BidForm(request.form)
+    form = BidForm(request.form, auction=auction)
     if not form.validate():
-        auction = Auction.query.get_or_404(auction_id)
         context = {
             'auction': auction,
             'form': form,
