@@ -20,6 +20,15 @@ def view_auction(auction_id):
     return render_template('view_auction.html', **context)
 
 
+@main_module.route('/auction/<int:auction_id>/bids')
+def view_auction_bids(auction_id):
+    auction = Auction.query.get_or_404(auction_id)
+    context = {
+        'auction': auction,
+    }
+    return render_template('view_auction_bids.html', **context)
+
+
 @main_module.route('/bid', methods=['POST'])
 def create_bid():
     auction_id = int(request.form['auction_id'])
