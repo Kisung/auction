@@ -8,3 +8,4 @@ pybase62>=0.3.1
 temporaluuid64>=0.1.2
 beautifulsoup4>=4.6.0
 requests>=2.18.0
+babel>=2.4.0

@@ -1,6 +1,8 @@
+from functools import partial
 import os
 import sys
 
+from babel.numbers import format_currency
 from flask import Flask
 from logbook import Logger, StreamHandler
 
@@ -35,8 +37,7 @@ def create_app(name=__name__, config={},
     from auction.api import api_module
     app.register_blueprint(api_module, url_prefix='/api/v1')
 
-    # @app.route('/')
-    # def root():
-    #     return app.send_static_file('index.html')
+    app.jinja_env.filters['format_currency'] \
+        = partial(format_currency, currency='KRW')
 
     return app
