@@ -110,10 +110,11 @@ class Auction(CRUDMixin, db.Model):
 
     @property
     def confirmed_bids(self):
-        return self.bids.filter(Bid.confirmed_at != None)  # noqa
+        return self.ordered_bids.filter(Bid.confirmed_at != None)  # noqa
 
     @property
     def current_price(self):
+        """Calculates the current price."""
         prices = [x.price for x in self.confirmed_bids]
         if len(prices) == 0:
             return self.starting_price
@@ -143,6 +144,16 @@ class Auction(CRUDMixin, db.Model):
         content = soup.find(id='contents')
 
         return content
+
+    def ended(self):
+        """Indicates whether the auction has been ended."""
+        return datetime.utcnow() >= self.ends_at
+
+    @property
+    def winning_bid(self):
+        """A winning bid. Note that this returns a value rather than a query.
+        """
+        return self.confirmed_bids.limit(1).first()
 
 
 class Bid(CRUDMixin, db.Model):

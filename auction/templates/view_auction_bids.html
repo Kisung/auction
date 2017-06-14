@@ -1,9 +1,39 @@
 {% extends 'layout.html' %}
+
+{% macro row_class(bid) %}
+  {%- if bid.confirmed %}
+    {%- if bid == bid.auction.winning_bid %}
+      positive
+    {%- endif %}
+  {%- else %}
+    disabled
+  {%- endif %}
+{%- endmacro %}
+
 {% block content %}
 
 <h1>{{ auction.title }}</h1>
 
-Current price: {{ auction.current_price }}
+<div class="ui statistics">
+  <div class="statistic">
+    <div class="label">
+      Current Price
+    </div>
+    <div class="value">
+      <!-- TODO: Format currency -->
+      {{ auction.current_price }}
+    </div>
+  </div>
+  <div class="statistic">
+    <div class="label">
+      # of Bids
+    </div>
+    <div class="value">
+      {{ auction.confirmed_bids.count() }}
+    </div>
+  </div>
+  <!-- TODO: Show remining time or status -->
+</div>
 
 <h2>Bids</h2>
 
@@ -17,7 +47,7 @@ Current price: {{ auction.current_price }}
   </thead>
   <tbody>
     {%- for bid in auction.ordered_bids %}
-    <tr class="{{ '' if bid.confirmed else 'disabled' }}">
+    <tr class="{{ row_class(bid) }}">
       <td>{{ bid.bids_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
       <td>{{ bid.censored_email }}</td>
       <td>
