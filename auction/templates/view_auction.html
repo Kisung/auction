@@ -1,9 +1,13 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h1>{{ auction.title }}</h1>
+<h1 class="ui dividing header">{{ auction.title }}</h1>
 
 <!-- NOTE: Can we trust Google Docs...? -->
-<p>{{ auction.gdocs_description|safe }}</p>
+<div class="ui content">
+  {{ auction.gdocs_description|safe }}
+</div>
+
+<div class="ui divider"></div>
 
 <a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
   class="ui button primary">입찰하기</a>
