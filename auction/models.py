@@ -3,7 +3,9 @@ import heapq
 from random import randint
 
 import base62
+from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
+import requests
 from sqlalchemy.dialects.postgresql import JSON
 import uuid64
 
@@ -123,6 +125,24 @@ class Auction(CRUDMixin, db.Model):
                 return first
             else:
                 return second + self.bidding_price_unit(second)
+
+    @property
+    def gdocs_description(self):
+        """Fetches HTML from a published Google Docs document.
+
+        TODO: Think of a better name.
+        TODO: Set up some kind of cache.
+        """
+        if not self.description.startswith('gdocs://'):
+            raise ValueError('Not a valid Google Docs URL')
+
+        url = 'https' + self.description[len('gdocs'):]
+
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.content)
+        content = soup.find(id='contents')
+
+        return content
 
 
 class Bid(CRUDMixin, db.Model):
