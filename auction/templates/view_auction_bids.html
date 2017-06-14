@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'macros.html' import auction_status %}
 
 {% macro row_class(bid) %}
   {%- if bid.confirmed %}
@@ -14,26 +15,7 @@
 
 <h1>{{ auction.title }}</h1>
 
-<div class="ui statistics">
-  <div class="statistic">
-    <div class="label">
-      Current Price
-    </div>
-    <div class="value">
-      <!-- TODO: Format currency -->
-      {{ auction.current_price }}
-    </div>
-  </div>
-  <div class="statistic">
-    <div class="label">
-      # of Bids
-    </div>
-    <div class="value">
-      {{ auction.confirmed_bids.count() }}
-    </div>
-  </div>
-  <!-- TODO: Show remining time or status -->
-</div>
+{{ auction_status(auction) }}
 
 <h2>Bids</h2>
 

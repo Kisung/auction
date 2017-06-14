@@ -1,0 +1,24 @@
+{% macro auction_status(auction) %}
+<div class="ui segment">
+  <div class="ui statistics">
+    <div class="statistic">
+      <div class="label">
+        Current Price
+      </div>
+      <div class="value">
+        <!-- TODO: Format currency -->
+        {{ auction.current_price }}
+      </div>
+    </div>
+    <div class="statistic">
+      <div class="label">
+        # of Bids
+      </div>
+      <div class="value">
+        {{ auction.confirmed_bids.count() }}
+      </div>
+    </div>
+    <!-- TODO: Show remining time or status -->
+  </div>
+</div>
+{% endmacro %}

@@ -1,11 +1,14 @@
 {% extends 'layout.html' %}
+{% from 'macros.html' import auction_status %}
 {% block content %}
 <h1 class="ui dividing header">{{ auction.title }}</h1>
 
+{{ auction_status(auction) }}
+
 <!-- NOTE: Can we trust Google Docs...? -->
-<div class="ui content">
+<p class="ui">
   {{ auction.gdocs_description|safe }}
-</div>
+</p>
 
 <div class="ui divider"></div>
 
