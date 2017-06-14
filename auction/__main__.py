@@ -39,5 +39,19 @@ def make_auction(title, description):
         log.info('Auction-{} has been created.', auction.id)
 
 
+@cli.command()
+@click.argument('auction_id')
+@click.argument('title')
+@click.argument('description')
+def update_auction(auction_id, title, description):
+    with create_app(__name__).app_context():
+        auction = Auction.get(auction_id)
+        auction.title = title
+        auction.description = description
+        db.session.commit()
+
+        log.info('Auction-{} has been updated.', auction.id)
+
+
 if __name__ == '__main__':
     cli()
