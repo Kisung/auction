@@ -31,7 +31,7 @@
 
   {{ render_field(form.email, placeholder='이메일') }}
 
-  {{ render_field(form.price, placeholder='1000') }}
+  {{ render_field(form.price, placeholder=auction.outbidding_price) }}
 
   <div class="field">
     <div class="ui checkbox">

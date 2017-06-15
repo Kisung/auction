@@ -130,6 +130,17 @@ class Auction(CRUDMixin, db.Model):
                 return second + self.bidding_price_unit(second)
 
     @property
+    def outbidding_price(self, current_price=None):
+        """Calculates the minimum price that outbids the current price."""
+        if current_price is None:
+            current_price = self.current_price
+
+        if self.confirmed_bids.count() == 0:
+            return self.starting_price
+        else:
+            return current_price + self.bidding_price_unit(current_price)
+
+    @property
     def gdocs_description(self):
         """Fetches HTML from a published Google Docs document.
 
