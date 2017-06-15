@@ -116,10 +116,8 @@ class Auction(CRUDMixin, db.Model):
     def current_price(self):
         """Calculates the current price."""
         prices = [x.price for x in self.confirmed_bids]
-        if len(prices) == 0:
+        if len(prices) <= 1:
             return self.starting_price
-        elif len(prices) == 1:
-            return prices[0]
         else:
             first, second = heapq.nlargest(2, prices)
             if first == second:
