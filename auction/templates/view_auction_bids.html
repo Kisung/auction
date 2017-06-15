@@ -34,7 +34,7 @@
       <td>{{ bid.censored_email }}</td>
       <td>
         <i class="icon {{ 'checkmark' if bid.confirmed else 'attention' }}"></i>
-        {{ bid.price|format_currency }}
+        {{ bid.disclosed_price|format_currency }}
       </td>
     </tr>
     {%- endfor %}

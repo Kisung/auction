@@ -190,3 +190,12 @@ class Bid(CRUDMixin, db.Model):
     def censored_email(self):
         username, domain = self.email.split('@')
         return '{}...@{}'.format(username[:3], domain)
+
+    @property
+    def disclosed_price(self):
+        """Returns a publicly disclosed price."""
+        current_price = self.auction.current_price
+        if self.price > current_price:
+            return current_price
+        else:
+            return self.price
