@@ -7,8 +7,8 @@
 
 <p>안녕하세요, {{ bid.name }}님.</p>
 
-<p>천원 경매 입찰 확인 이메일입니다.  {{ bid.auction.title }} 매물에
-  {{ bid.price }}원으로 입찰하셨습니다.
+<p>[천원 경매] 입찰 확인 이메일입니다.  <b>{{ bid.auction.title }}</b> 매물에
+  <b>{{ bid.price|format_currency }}</b>으로 입찰하셨습니다.
   아래 링크를 클릭하거나 확인 코드를 붙여넣어야 입찰이 완료됩니다.<p>
 
 <h3>링크</h3>

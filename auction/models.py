@@ -242,7 +242,7 @@ class Bid(CRUDMixin, db.Model):
             },
             'Message': {
                 'Subject': {
-                    'Data': 'Bidding confirmation',
+                    'Data': '[천원 경매] 입찰 확인 이메일',
                     'Charset': 'utf-8'
                 },
                 'Body': {
@@ -253,4 +253,3 @@ class Bid(CRUDMixin, db.Model):
                 }
             }
         })
->>>>>>> Sends a confirmation email
