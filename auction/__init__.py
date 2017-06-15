@@ -40,4 +40,8 @@ def create_app(name=__name__, config={},
     app.jinja_env.filters['format_currency'] \
         = partial(format_currency, currency='KRW')
 
+    from auction.utils import format_datetime, human_readable
+    app.jinja_env.filters['format_datetime'] = format_datetime
+    app.jinja_env.filters['human_readable'] = human_readable
+
     return app

@@ -9,6 +9,8 @@ import requests
 from sqlalchemy.dialects.postgresql import JSON
 import uuid64
 
+from auction.utils import now
+
 
 db = SQLAlchemy()
 JsonType = db.String().with_variant(JSON(), 'postgresql')
@@ -29,7 +31,7 @@ class CRUDMixin(object):
 
         if hasattr(instance, 'timestamp') \
                 and getattr(instance, 'timestamp') is None:
-            instance.timestamp = datetime.utcnow()
+            instance.timestamp = now()
 
         return instance.save(commit=commit)
 
@@ -144,9 +146,14 @@ class Auction(CRUDMixin, db.Model):
 
         return content
 
+    @property
     def ended(self):
         """Indicates whether the auction has been ended."""
-        return datetime.utcnow() >= self.ends_at
+        return now() >= self.ends_at
+
+    @property
+    def remaining(self):
+        return self.ends_at - now()
 
     @property
     def winning_bid(self):

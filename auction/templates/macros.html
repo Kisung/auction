@@ -1,6 +1,6 @@
 {% macro auction_status(auction) %}
 <div class="ui segment">
-  <div class="ui statistics">
+  <div class="ui small statistics">
     <div class="statistic">
       <div class="label">
         Current Price
@@ -19,6 +19,23 @@
       </div>
     </div>
     <!-- TODO: Show remining time or status -->
+    <div class="ui statistic">
+      <div class="label">
+        {%- if auction.ended %}
+        Ended
+        {%- else %}
+        Ends in
+        {%- endif %}
+      </div>
+      {% set delta, unit = auction.remaining|human_readable %}
+      <div class="value">
+        {{ delta|abs }}
+      </div>
+      <div style="text-align:center">
+        {{ unit }}
+        {% if delta < 0 %}ago{% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% endmacro %}

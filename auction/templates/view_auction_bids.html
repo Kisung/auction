@@ -33,7 +33,7 @@
   <tbody>
     {%- for bid in auction.ordered_bids %}
     <tr class="{{ row_class(bid) }}">
-      <td>{{ bid.bids_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+      <td>{{ bid.bids_at|format_datetime }}</td>
       <td>{{ bid.censored_email }}</td>
       <td>
         <i class="icon {{ 'checkmark' if bid.confirmed else 'attention' }}"></i>

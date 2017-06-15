@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% from 'macros.html' import auction_status %}
 {% block content %}
-<h1 class="ui dividing header">{{ auction.title }}</h1>
+<h1 class="ui header">{{ auction.title }}</h1>
 
 {{ auction_status(auction) }}
 
