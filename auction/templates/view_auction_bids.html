@@ -24,7 +24,10 @@
     <tr>
       <th>Date</th>
       <th>Email</th>
-      <th>Bidding Price</th>
+      <th>
+        Bidding Price
+        <i class="help circle icon" data-html="도움말 준비중..."></i>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -40,5 +43,15 @@
     {%- endfor %}
   </tbody>
 </table>
+
+<a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
+  class="ui button primary">입찰하기</a>
+<a class="ui button"
+  href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
+  상품 설명으로 돌아가기</a>
+
+<script>
+  $('.help').popup();
+</script>
 
 {% endblock %}

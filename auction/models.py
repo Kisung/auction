@@ -140,6 +140,7 @@ class Auction(CRUDMixin, db.Model):
         resp = requests.get(url)
         soup = BeautifulSoup(resp.content)
         content = soup.find(id='contents')
+        # TODO: Select div#contents' child nodes
 
         return content
 
