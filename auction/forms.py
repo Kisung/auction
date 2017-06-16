@@ -44,3 +44,7 @@ class BidForm(Form):
                  **kwargs):
         self.auction = auction
         super(BidForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+
+class ConfirmBidForm(Form):
+    code = StringField('', [DataRequired()], _name='code')

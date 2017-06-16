@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'macros.html' import auction_status %}
+{% from 'macros.html' import auction_status, bidding_button %}
 {% block content %}
 <h1 class="ui header">{{ auction.title }}</h1>
 
@@ -12,8 +12,7 @@
 
 <div class="ui divider"></div>
 
-<a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
-  class="ui button primary">입찰하기</a>
+{{ bidding_button(auction) }}
 <a href="{{ url_for('main.view_auction_bids', auction_id=auction.id) }}"
   class="ui button">진행 상황 보기</a>
 
