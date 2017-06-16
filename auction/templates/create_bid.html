@@ -1,19 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'macros.html' import auction_status, bidding_button %}
-
-{% macro render_field(field) %}
-  <div class="field">
-    {{ field.label }}
-  {{ field(**kwargs)|safe }}
-  {% if field.errors %}
-    {% for error in field.errors %}
-    <div class="ui pointing red basic label">
-      {{ error }}
-    </div>
-    {% endfor %}
-  {% endif %}
-  </div>
-{% endmacro %}
+{% from 'macros.html' import auction_status, bidding_button, render_field %}
 
 {% block content %}
 

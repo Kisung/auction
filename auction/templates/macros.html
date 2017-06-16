@@ -52,3 +52,19 @@
       class="ui button primary">입찰하기</a>
   {%- endif %}
 {% endmacro %}
+
+{% macro render_field(field) %}
+  <div class="field">
+  {%- if field.label.value %}
+    {{ field.label }}
+  {%- endif %}
+  {{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    {% for error in field.errors %}
+    <div class="ui pointing red basic label">
+      {{ error }}
+    </div>
+    {% endfor %}
+  {% endif %}
+  </div>
+{% endmacro %}

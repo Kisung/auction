@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% from 'macros.html' import render_field %}
+{% block content %}
+
+<h1>Confirm your bidding for {{ bid.auction.title }}</h1>
+
+<form class="ui form" method="get" action="">
+  <div class="field">
+    <label>Code</label>
+    <div class="two fields">
+      <div class="field">
+        {{ render_field(form.code) }}
+      </div>
+      <div class="field">
+        <button class="ui default button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+</form>
+{% endblock %}

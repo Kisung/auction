@@ -3,7 +3,7 @@ import os
 
 from flask import Blueprint, redirect, render_template, request, url_for
 
-from auction.forms import BidForm
+from auction.forms import BidForm, ConfirmBidForm
 from auction.models import Auction, Bid
 
 
@@ -62,8 +62,12 @@ def create_bid():
 
 @main_module.route('/bid/<int:bid_id>/confirm')
 def confirm_bid(bid_id):
-    code = request.args['code']
+    code = request.args.get('code')
     bid = Bid.query.get_or_404(bid_id)
+
+    if code is None:
+        form = ConfirmBidForm()
+        return render_template('confirm_bid.html', bid=bid, form=form)
 
     if bid.auction.ended:
         return 'Auction has ended', 400
