@@ -62,25 +62,23 @@ def create_bid():
 
 @main_module.route('/bid/<int:bid_id>/confirm')
 def confirm_bid(bid_id):
-    code = request.args.get('code')
+    code = request.args['code']
     bid = Bid.query.get_or_404(bid_id)
 
-    # FIXME: Maybe we should flatten the following if-else statements
-    if code:
-        if code == bid.confirmation_code:
-            if bid.confirmed:
-                # FIXME: Is 400 okay?
-                return 'Bid already confirmed', 400
-            else:
-                bid.mark_as_confirmed()
-                return redirect(url_for('main.view_auction_bids',
-                                        auction_id=bid.auction.id))
-        else:
-            # FIXME: Is 404 okay?
-            return 'Invalid confirmation code', 404
-    else:
-        # TODO: Show a page to manually enter the code
-        return render_confirmation_email(bid)
+    if bid.auction.ended:
+        return 'Auction has ended', 400
+
+    if bid.confirmed:
+        # FIXME: Is 400 okay?
+        return 'Bid already confirmed', 400
+
+    if code != bid.confirmation_code:
+        # FIXME: Is 404 okay?
+        return 'Invalid confirmation code', 404
+
+    bid.mark_as_confirmed()
+    return redirect(url_for('main.view_auction_bids',
+                            auction_id=bid.auction.id))
 
 
 def parse_price(value, currency='KRW'):
