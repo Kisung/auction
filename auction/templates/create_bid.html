@@ -13,9 +13,10 @@
   action="{{ url_for('main.create_bid', auction_id=auction.id) }}">
   <input type="hidden" name="auction_id" value="{{ auction.id }}"/>
 
-  {{ render_field(form.name, placeholder='이름') }}
-
-  {{ render_field(form.email, placeholder='이메일') }}
+  <div class="two fields">
+    {{ render_field(form.name, placeholder='이름') }}
+    {{ render_field(form.email, placeholder='이메일') }}
+  </div>
 
   {{ render_field(form.price, placeholder=auction.outbidding_price) }}
 
@@ -25,7 +26,7 @@
       <label>경매 규칙을  모두 이해하였으며 이에 동의합니다.</label>
     </div>
   </div>
-  {{ bidding_button(auction) }}
+  {{ bidding_button(auction, button=True) }}
   <a href="{{ url_for('main.view_auction', auction_id=auction.id) }}"
     class="ui button">상품 설명으로 돌아가기</a>
 </form>

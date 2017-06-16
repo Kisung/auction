@@ -44,27 +44,31 @@
 </div>
 {% endmacro %}
 
-{% macro bidding_button(auction) %}
+{% macro bidding_button(auction, button=False) %}
   {%- if auction.ended %}
     <button class="ui button disabled">경매가 마감되었습니다</button>
   {%- else %}
-    <a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
-      class="ui button primary">입찰하기</a>
+    {%- if button %}
+      <button class="ui button primary">입찰하기</button>
+    {%- else %}
+      <a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
+        class="ui button primary">입찰하기</a>
+    {%- endif %}
   {%- endif %}
 {% endmacro %}
 
-{% macro render_field(field) %}
-  <div class="field">
-  {%- if field.label.value %}
-    {{ field.label }}
-  {%- endif %}
-  {{ field(**kwargs)|safe }}
-  {% if field.errors %}
-    {% for error in field.errors %}
-    <div class="ui pointing red basic label">
-      {{ error }}
-    </div>
-    {% endfor %}
-  {% endif %}
+{% macro render_field(field, div_class='field') %}
+  <div class="{{ div_class }}">
+    {%- if field.label.text %}
+      {{ field.label }}
+    {%- endif %}
+    {{ field(**kwargs)|safe }}
+    {%- if field.errors %}
+      {%- for error in field.errors %}
+      <div class="ui pointing red basic label">
+        {{ error }}
+      </div>
+      {%- endfor %}
+    {%- endif %}
   </div>
 {% endmacro %}
