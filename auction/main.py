@@ -99,4 +99,4 @@ def render_confirmation_email(bid):
         'link': os.environ['AUCTION_HOST'] + url_for(
             'main.confirm_bid', bid_id=bid.id, code=bid.confirmation_code)
     }
-    return render_template('bidding_confirmation.html', **context)
+    return render_template('confirm_bid_email.html', **context)
