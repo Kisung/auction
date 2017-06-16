@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'macros.html' import auction_status %}
+{% from 'macros.html' import auction_status, bidding_button %}
 
 {% macro row_class(bid) %}
   {%- if bid.confirmed %}
@@ -44,8 +44,7 @@
   </tbody>
 </table>
 
-<a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
-  class="ui button primary">입찰하기</a>
+{{ bidding_button(auction) }}
 <a class="ui button"
   href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
   상품 설명으로 돌아가기</a>

@@ -3,7 +3,11 @@
   <div class="ui small statistics">
     <div class="statistic">
       <div class="label">
+        {%- if auction.ended %}
+        Final Price
+        {%- else %}
         Current Price
+        {%- endif %}
       </div>
       <div class="value">
         <!-- TODO: Format currency -->
@@ -38,4 +42,13 @@
     </div>
   </div>
 </div>
+{% endmacro %}
+
+{% macro bidding_button(auction) %}
+  {%- if auction.ended %}
+    <button class="ui button disabled">경매가 마감되었습니다</button>
+  {%- else %}
+    <a href="{{ url_for('main.create_bid', auction_id=auction.id) }}"
+      class="ui button primary">입찰하기</a>
+  {%- endif %}
 {% endmacro %}
