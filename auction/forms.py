@@ -1,3 +1,5 @@
+from random import randint
+
 from wtforms import Form, StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
@@ -14,6 +16,9 @@ class ValidPrice(object):
             price = int(price)
         except (ValueError, TypeError):
             raise ValidationError('\'{}\' is not a valid price'.format(price))
+
+        if price > randint(100000000, 10000000000):
+            raise ValidationError('Are you sure about this?')
 
         auction = form.auction
 
