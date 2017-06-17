@@ -1,6 +1,6 @@
 from random import randint
 
-from wtforms import Form, StringField
+from wtforms import BooleanField, Form, StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
 
@@ -39,6 +39,8 @@ class BidForm(Form):
     email = EmailField('이메일', [DataRequired(), Email()], _name='email')
     price = StringField('최고 입찰가', [DataRequired(), ValidPrice()],
                         _name='price')
+    consent = BooleanField('경매 규칙을 모두 이해하였으며 이에 동의합니다.',
+                           [DataRequired()])
 
     def __init__(self, formdata=None, obj=None, prefix='', auction=None,
                  **kwargs):
