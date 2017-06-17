@@ -91,6 +91,10 @@ def confirm_bid(bid_id):
         return 'Invalid confirmation code', 404
 
     bid.mark_as_confirmed()
+    flash({
+        'text': '{}님의 입찰이 확인되었습니다. 감사합니다.'.format(bid.name),
+        'image': '<i class="thumbs outline up icon"></i>',
+    }, 'modal')
     return redirect(url_for('main.view_auction_bids',
                             auction_id=bid.auction.id))
 
