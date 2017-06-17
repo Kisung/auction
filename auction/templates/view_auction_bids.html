@@ -17,12 +17,31 @@
 
 {{ auction_status(auction) }}
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="ui info message">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
+{% with messages = get_flashed_messages(category_filter=['modal']) %}
+  {%- for message in messages %}
+  <div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+      <i class="announcement icon"></i>
+      Important Notes
+    </div>
+    <div class="image content">
+      <div class="image">
+        {{ message.image|safe }}
+      </div>
+      <div class="description">
+        {{ message.text }}
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui button">Cancel</div>
+      <div class="ui button">OK</div>
+    </div>
+  </div>
+  {%- endfor %}
+<script>
+	$('.modal').modal('show');
+</script>
 {% endwith %}
 
 <h2>Bids</h2>

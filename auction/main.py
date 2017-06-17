@@ -50,7 +50,11 @@ def create_bid():
             confirmation_code=Bid.generate_confirmation_code(),
         )
         bid.send_confirmation_email()
-        flash('입력하신 이메일 주소로 확인 메시지가 발송되었습니다.')
+        flash({
+            'text': '입력하신 이메일 주소로 확인 메시지가 발송되었습니다. '
+                    '이메일에 포함된 링크를 클릭하면 입찰이 완료됩니다.',
+            'image': '<i class="mail outline icon"></i>',
+        }, 'modal')
 
         return redirect(
             url_for('main.view_auction_bids', auction_id=auction.id))
