@@ -1,7 +1,7 @@
 {% macro auction_status(auction) %}
 <div class="ui segment">
   <div class="ui small statistics">
-    <div class="statistic">
+    <div class="statistic {% if auction.confirmed_bids.count() == 0 %}grey{% endif %}">
       <div class="label">
         {%- if auction.ended %}
         Final Price
