@@ -11,6 +11,7 @@ import requests
 from sqlalchemy.dialects.postgresql import JSON
 import uuid64
 
+from auction import cache
 from auction.utils import now
 
 
@@ -141,6 +142,7 @@ class Auction(CRUDMixin, db.Model):
             return current_price + self.bidding_price_unit(current_price)
 
     @property
+    @cache.cached(timeout=600, key_prefix='gdocs')
     def gdocs_description(self):
         """Fetches HTML from a published Google Docs document.
 

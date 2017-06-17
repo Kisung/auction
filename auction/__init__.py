@@ -4,6 +4,7 @@ import sys
 
 from babel.numbers import format_currency
 from flask import Flask
+from flask.ext.cache import Cache
 from logbook import Logger, StreamHandler
 
 
@@ -14,6 +15,8 @@ __email__ = 'suminb@gmail.com'
 
 StreamHandler(sys.stderr).push_application()
 log = Logger('auction')
+
+cache = None
 
 
 def create_app(name=__name__, config={},
@@ -27,6 +30,11 @@ def create_app(name=__name__, config={},
     app.config['DEBUG'] = bool(os.environ.get('DEBUG', False))
 
     app.config.update(config)
+
+    global cache
+    cache = Cache(app, config={
+        'CACHE_TYPE': 'simple',
+    })
 
     from auction.models import db
     db.init_app(app)

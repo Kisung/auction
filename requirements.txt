@@ -2,6 +2,7 @@ click>=6.7
 Flask>=0.12.2
 Flask-Admin>=1.5.0
 Flask-SQLAlchemy>=2.2
+flask-cache>=0.13.1
 Logbook>=1.0.0
 psycopg2>=2.7.1
 pybase62>=0.3.1
