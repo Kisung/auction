@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from auction.forms import BidForm, ConfirmBidForm
 from auction.models import Auction, Bid
@@ -50,6 +50,8 @@ def create_bid():
             confirmation_code=Bid.generate_confirmation_code(),
         )
         bid.send_confirmation_email()
+        flash('입력하신 이메일 주소로 확인 메시지가 발송되었습니다.')
+
         return redirect(
             url_for('main.view_auction_bids', auction_id=auction.id))
 
