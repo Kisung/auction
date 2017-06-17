@@ -17,6 +17,14 @@
 
 {{ auction_status(auction) }}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="ui info message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <h2>Bids</h2>
 
 <table class="ui celled table">
@@ -48,9 +56,5 @@
 <a class="ui button"
   href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
   상품 설명으로 돌아가기</a>
-
-<script>
-  $('.help').popup();
-</script>
 
 {% endblock %}
