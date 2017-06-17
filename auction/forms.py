@@ -17,15 +17,10 @@ class ValidPrice(object):
 
         auction = form.auction
 
-        if not auction.has_bidding() and price < auction.starting_price:
+        if price < auction.outbidding_price:
             raise ValidationError(
-                'Bidding price must be equal to or greater than the starting '
-                'price ({})'.format(auction.starting_price))
-
-        if price <= auction.current_price:
-            raise ValidationError(
-                'Bidding price must be greater than the current price ({})'
-                ''.format(auction.current_price))
+                'Bidding price must be equal to or greater than the outbidding '
+                'price ({})'.format(auction.outbidding_price))
 
         bidding_unit = Auction.bidding_price_unit(price)
         if price % bidding_unit != 0:
