@@ -33,7 +33,7 @@
       </div>
       {% set delta, unit = auction.remaining|human_readable %}
       <div class="value">
-        <div class="help" data-html="{{ auction.ends_at|format_datetime }} UTC">
+        <div class="help" data-content="{{ auction.ends_at|format_datetime }} UTC">
           {{ delta|abs }}
         </div>
       </div>
