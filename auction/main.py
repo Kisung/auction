@@ -63,7 +63,11 @@ def create_bid():
 @main_module.route('/bid/<int:bid_id>/confirm')
 def confirm_bid(bid_id):
     code = request.args.get('code')
+    render = request.args.get('render')
     bid = Bid.query.get_or_404(bid_id)
+
+    if os.environ.get('DEBUG') and request.args.get('render'):
+        return render_confirmation_email(bid)
 
     if code is None:
         form = ConfirmBidForm()
@@ -97,6 +101,8 @@ def render_confirmation_email(bid):
         'bid': bid,
         'host': os.environ['AUCTION_HOST'],
         'link': os.environ['AUCTION_HOST'] + url_for(
-            'main.confirm_bid', bid_id=bid.id, code=bid.confirmation_code)
+            'main.confirm_bid', bid_id=bid.id, code=bid.confirmation_code),
+        'link_without_code': os.environ['AUCTION_HOST'] + url_for(
+            'main.confirm_bid', bid_id=bid.id),
     }
     return render_template('confirm_bid_email.html', **context)
