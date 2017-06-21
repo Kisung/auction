@@ -103,13 +103,39 @@ def confirm_bid(bid_id):
         # FIXME: Is 404 okay?
         return 'Invalid confirmation code', 404
 
+    previous_winning_bid = bid.auction.winning_bid
     bid.mark_as_confirmed()
+
+    if previous_winning_bid is not None and previous_winning_bid.outbidded:
+        previous_winning_bid.send_outbid_notification()
+
+    if bid != bid.auction.winning_bid:
+        bid.send_outbid_notification()
+
+    # if bid.outbidded:
+    #     flash({
+    #         'text': '{}님보다 높은 가격을 제시한 참여자가 있어서 낙찰 '
+    #                 '후보에서 밀려났습니다. 더 높은 가격으로 입찰해보세요.'
+    #                 ''.format(bid.name),
+    #         'image': '<i class="warning sign icon"></i>',
+    #     }, 'modal')
+    # else:
     flash({
-        'text': '{}님의 입찰이 확인되었습니다. 감사합니다.'.format(bid.name),
+        'text': '{}님의 입찰이 확인되었습니다. 감사합니다.'
+                ''.format(bid.name),
         'image': '<i class="thumbs outline up icon"></i>',
     }, 'modal')
     return redirect(url_for('main.view_auction_bids',
                             auction_id=bid.auction.id))
+
+
+@main_module.route('/bid/<int:bid_id>/outbidded')
+def view_outbid_notification(bid_id):
+    if not os.environ.get('DEBUG', False):
+        return '', 403
+
+    bid = Bid.query.get_or_404(bid_id)
+    return render_outbid_notification(bid)
 
 
 def parse_price(value, currency='KRW'):
@@ -123,9 +149,13 @@ def render_confirmation_email(bid):
     context = {
         'bid': bid,
         'host': os.environ['AUCTION_HOST'],
-        'link': os.environ['AUCTION_HOST'] + url_for(
-            'main.confirm_bid', bid_id=bid.id, code=bid.confirmation_code),
-        'link_without_code': os.environ['AUCTION_HOST'] + url_for(
-            'main.confirm_bid', bid_id=bid.id),
     }
     return render_template('confirm_bid_email.html', **context)
+
+
+def render_outbid_notification(bid):
+    context = {
+        'bid': bid,
+        'host': os.environ['AUCTION_HOST'],
+    }
+    return render_template('outbid_notification.html', **context)
