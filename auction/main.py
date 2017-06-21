@@ -5,12 +5,25 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from auction.forms import BidForm, ConfirmBidForm
 from auction.models import Auction, Bid
+from auction.utils import now
 
 
 main_module = Blueprint('main', __name__, template_folder='templates')
 
 
-@main_module.route('/auction/<int:auction_id>')
+@main_module.route('/auctions')
+def list_auctions():
+    auctions = Auction.query \
+        .filter(Auction.ends_at > now()) \
+        .order_by(Auction.ends_at)
+    context = {
+        'auctions': auctions,
+    }
+    return render_template('list_auctions.html', **context)
+
+
+@main_module.route('/auction/<int:auction_id>')  # legacy
+@main_module.route('/auctions/<int:auction_id>')
 def view_auction(auction_id):
     auction = Auction.query.get_or_404(auction_id)
     form = BidForm()
