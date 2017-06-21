@@ -11,8 +11,8 @@
   [천원 경매]
   <a href="{{ host }}{{ url_for('main.view_auction_bids', auction_id=bid.auction.id) }}">
     {{ bid.auction.title }}</a> 매물에 {{ bid.name }}님의 최대 입찰가인
-  {{ bid.price|format_currency }}보다 더 높은 가격으로 입찰한 사람이 있어서
-  낙찰 후보에서 탈락하셨습니다.
+  <b>{{ bid.price|format_currency }}</b>보다 더 높은 가격으로 입찰한 사람이
+  있어서 아쉽게도 낙찰 후보에서 탈락하셨습니다.
 </p>
 <p>
   하지만 너무 걱정하지 마세요. 입찰 회수 제한은 없으니 더 높은 가격으로 다시

@@ -262,7 +262,7 @@ class Bid(CRUDMixin, db.Model):
             },
             'Message': {
                 'Subject': {
-                    'Data': '[천원 경매] 입찰 확인 이메일',
+                    'Data': '[천원 경매] 입찰 확인',
                     'Charset': 'utf-8'
                 },
                 'Body': {
