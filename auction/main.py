@@ -129,8 +129,11 @@ def confirm_bid(bid_id):
                             auction_id=bid.auction.id))
 
 
-@main_module.route('/outbid-notification/<int:bid_id>')
+@main_module.route('/bid/<int:bid_id>/outbidded')
 def view_outbid_notification(bid_id):
+    if not os.environ.get('DEBUG', False):
+        return '', 403
+
     bid = Bid.query.get_or_404(bid_id)
     return render_outbid_notification(bid)
 
