@@ -19,6 +19,9 @@ db = SQLAlchemy()
 JsonType = db.String().with_variant(JSON(), 'postgresql')
 
 
+AWS_SES_REGION = 'us-west-2'
+
+
 class CRUDMixin(object):
 
     __table_args__ = {'extend_existing': True}
@@ -176,6 +179,14 @@ class Auction(CRUDMixin, db.Model):
         """
         return self.confirmed_bids.limit(1).first()
 
+    def notify_outbidded_participants(self, except_=None):
+        for bid in self.confirmed_bids:
+            if except_ is not None and bid == except_:
+                continue
+
+            if bid.outbidded:
+                bid
+
 
 class Bid(CRUDMixin, db.Model):
 
@@ -210,6 +221,13 @@ class Bid(CRUDMixin, db.Model):
         return self.confirmed_at is not None
 
     @property
+    def outbidded(self):
+        """Indicates whether the bid has been outbidded."""
+        return self.price < self.auction.current_price \
+            or (self.price == self.auction.current_price
+                and self != self.auction.winning_bid)
+
+    @property
     def censored_email(self):
         username, domain = self.email.split('@')
         return '{}...{}@{}'.format(username[:2], username[-1], domain)
@@ -236,7 +254,7 @@ class Bid(CRUDMixin, db.Model):
         # - eu-west-1 (Ireland)
         # - us-east-1 (Virginia)
         # - us-west-2 (Oregon)
-        client = boto3.client('ses', region_name='us-west-2')
+        client = boto3.client('ses', region_name=AWS_SES_REGION)
         client.send_email(**{
             'Source': os.environ['AUCTION_EMAIL_MASTER'],
             'Destination': {
@@ -245,6 +263,30 @@ class Bid(CRUDMixin, db.Model):
             'Message': {
                 'Subject': {
                     'Data': '[천원 경매] 입찰 확인 이메일',
+                    'Charset': 'utf-8'
+                },
+                'Body': {
+                    'Html': {
+                        'Data': html,
+                        'Charset': 'utf-8'
+                    }
+                }
+            }
+        })
+
+    def send_outbid_notification(self):
+        from auction.main import render_outbid_notification
+        html = render_outbid_notification(self)
+
+        client = boto3.client('ses', region_name=AWS_SES_REGION)
+        client.send_email(**{
+            'Source': os.environ['AUCTION_EMAIL_MASTER'],
+            'Destination': {
+                'ToAddresses': [self.email]
+            },
+            'Message': {
+                'Subject': {
+                    'Data': '[천원 경매] Outbid Notification',
                     'Charset': 'utf-8'
                 },
                 'Body': {

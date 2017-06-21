@@ -1,0 +1,24 @@
+<style>
+  body, p {
+    font-family: sans-serif;
+    font-size: 11pt;
+  }
+</style>
+
+<p>안녕하세요, {{ bid.name }}님.</p>
+
+<p>
+  [천원 경매]
+  <a href="{{ host }}{{ url_for('main.view_auction_bids', auction_id=bid.auction.id) }}">
+    {{ bid.auction.title }}</a> 매물에 {{ bid.name }}님의 최대 입찰가인
+  {{ bid.price|format_currency }}보다 더 높은 가격으로 입찰한 사람이 있어서
+  낙찰 후보에서 탈락하셨습니다.
+</p>
+<p>
+  하지만 너무 걱정하지 마세요. 입찰 회수 제한은 없으니 더 높은 가격으로 다시
+  입찰하시면 됩니다.
+</p>
+<p>
+  <a href="{{ host }}{{ url_for('main.create_bid', auction_id=bid.auction.id) }}">
+    새로 입찰하기</a>
+</p>
