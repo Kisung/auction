@@ -14,8 +14,7 @@ main_module = Blueprint('main', __name__, template_folder='templates')
 @main_module.route('/auctions')
 def list_auctions():
     auctions = Auction.query \
-        .filter(Auction.ends_at > now()) \
-        .order_by(Auction.ends_at)
+        .order_by(Auction.ends_at.desc())
     context = {
         'auctions': auctions,
     }

@@ -11,14 +11,20 @@
   </thead>
   <tbody>
     {%- for auction in auctions %}
-    <tr>
+    <tr class="{% if auction.ended %}disabled{% endif %}">
       <td>
         <a href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
           {{ auction.title }}
         </a>
       </td>
       <td>{{ auction.current_price|format_currency }}</td>
-      <td>{{ auction.ends_at|format_datetime }} UTC</td>
+      <td>
+        {%- if auction.ended %}
+        Ended
+        {%- else %}
+        {{ auction.ends_at|format_datetime }} UTC
+        {%- endif %}
+      </td>
     </tr>
     {%- endfor %}
   </tbody>
