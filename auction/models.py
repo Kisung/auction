@@ -145,7 +145,7 @@ class Auction(CRUDMixin, db.Model):
             return current_price + self.bidding_price_unit(current_price)
 
     @property
-    @cache.cached(timeout=600, key_prefix='gdocs')
+    @cache.cached(timeout=300, key_prefix='gdocs/%s')
     def gdocs_description(self):
         """Fetches HTML from a published Google Docs document.
 
