@@ -16,7 +16,7 @@ from auction.utils import now
 
 
 db = SQLAlchemy()
-JsonType = db.String().with_variant(JSON(), 'postgresql')
+JSONType = db.String().with_variant(JSON(), 'postgresql')
 
 
 AWS_SES_REGION = 'us-west-2'
@@ -87,6 +87,8 @@ class Auction(CRUDMixin, db.Model):
     starting_price = 1000
 
     bids = db.relationship('Bid', backref='auction', lazy='dynamic')
+
+    data = db.Column(JSONType)
 
     @classmethod
     def bidding_price_unit(cls, price):
