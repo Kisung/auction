@@ -16,7 +16,7 @@ __email__ = 'suminb@gmail.com'
 StreamHandler(sys.stderr).push_application()
 log = Logger('auction')
 
-cache = None
+cache = Cache()
 
 
 def create_app(name=__name__, config={},
