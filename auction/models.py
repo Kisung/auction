@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.orm.attributes import flag_modified
 import uuid64
 
 from auction import cache
@@ -200,10 +201,31 @@ class Auction(CRUDMixin, db.Model):
         if not self.data.get('payment'):
             raise ValueError('Payment information is required')
 
+        if self.data.get('sold_notification_sent', False):
+            raise ValueError(
+                'Auction-{0} already has been notified'.format(self.id))
+
         from auction.main import render_sold_notification
         html = render_sold_notification(self)
 
-        return send_email([self.winning_bid.email], '[천원경매] 낙찰', html)
+        try:
+            resp = send_email([self.winning_bid.email],
+                              '[천원경매] 낙찰', html)
+        except:
+            # FIXME: Does send_mail even raise an exception?
+            # FIXME: Handle the exception
+            pass
+        else:
+            self.data['sold_notification_sent'] = True
+
+            # Without this, the JSON field won't get updated.
+            # Refer https://bashelton.com/2014/03/updating-postgresql-json-fields-via-sqlalchemy/  # noqa
+            # for more details.
+            flag_modified(self, 'data')
+
+            self.save()
+
+            return resp
 
 
 class Bid(CRUDMixin, db.Model):

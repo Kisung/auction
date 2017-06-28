@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 
 import click
 
@@ -41,6 +42,13 @@ def make_auction(title, description, start_date, duration):
             description=description,
             starts_at=starts_at,
             ends_at=starts_at + timedelta(hours=duration),
+            data={
+                # FIXME: This is a temporary workaround
+                'payment': os.environ['PAYMENT'],
+                # NOTE: We probably need a better name than this...
+                'ending_soon_notification_sent': False,
+                'sold_notification_sent': False,
+            },
         )
 
         log.info('Auction-{} has been created.', auction.id)
@@ -75,10 +83,6 @@ def send_sold_notification(auction_id):
 
         if not auction:
             log.warn('Auction-{} is not found.', auction_id)
-            return
-
-        if auction.data and auction.data['notified']:
-            log.warn('Auction-{} is already notified.', auction_id)
             return
 
         auction.send_sold_notification()
