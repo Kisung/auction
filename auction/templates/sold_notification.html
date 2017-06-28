@@ -11,7 +11,10 @@
   [천원경매]
   <a href="{{ host }}{{ url_for('main.view_auction_bids', auction_id=auction.id) }}">
     {{ auction.title }}</a> 매물에 낙찰된 것을 축하드립니다.
-  최종 낙찰가는 {{ auction.current_price|format_currency }}이며,
-  <a href="#">이 페이지</a>의 안내에 따라 결제 절차를 진행하시면
+  최종 낙찰가는 <b>{{ auction.current_price|format_currency }}</b>이며,
+  아래의 안내에 따라 결제 절차를 진행하시면
   판매자가 확인 후 상품을 전달해드립니다. 감사합니다.
 </p>
+
+<h3>결제 정보</h3>
+<p>{{ auction.data['payment'] }}</p>

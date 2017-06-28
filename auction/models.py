@@ -197,6 +197,9 @@ class Auction(CRUDMixin, db.Model):
                 bid
 
     def send_sold_notification(self):
+        if not self.data.get('payment'):
+            raise ValueError('Payment information is required')
+
         from auction.main import render_sold_notification
         html = render_sold_notification(self)
 
