@@ -1,25 +1,20 @@
 from datetime import datetime
 import heapq
-import os
 from random import randint
 
 import base62
 from bs4 import BeautifulSoup
-import boto3
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
 import uuid64
 
 from auction import cache
-from auction.utils import now
+from auction.utils import now, send_email
 
 
 db = SQLAlchemy()
 JSONType = db.String().with_variant(JSON(), 'postgresql')
-
-
-AWS_SES_REGION = 'us-west-2'
 
 
 class CRUDMixin(object):
@@ -201,6 +196,12 @@ class Auction(CRUDMixin, db.Model):
             if bid.outbidded:
                 bid
 
+    def send_sold_notification(self):
+        from auction.main import render_sold_notification
+        html = render_sold_notification(self)
+
+        return send_email([self.winning_bid.email], '[천원경매] 낙찰', html)
+
 
 class Bid(CRUDMixin, db.Model):
 
@@ -259,55 +260,17 @@ class Bid(CRUDMixin, db.Model):
         self.confirmed_at = datetime.utcnow()
         db.session.commit()
 
+    # FIXME: send_ functions should be somewhere else
+    # (i.e., under the controller)
+
     def send_confirmation_email(self):
         from auction.main import render_confirmation_email
         html = render_confirmation_email(self)
 
-        # NOTE: as of June 13, 2017, SES is only supported in the following
-        # regions:
-        # - eu-west-1 (Ireland)
-        # - us-east-1 (Virginia)
-        # - us-west-2 (Oregon)
-        client = boto3.client('ses', region_name=AWS_SES_REGION)
-        client.send_email(**{
-            'Source': os.environ['AUCTION_EMAIL_MASTER'],
-            'Destination': {
-                'ToAddresses': [self.email]
-            },
-            'Message': {
-                'Subject': {
-                    'Data': '[천원 경매] 입찰 확인',
-                    'Charset': 'utf-8'
-                },
-                'Body': {
-                    'Html': {
-                        'Data': html,
-                        'Charset': 'utf-8'
-                    }
-                }
-            }
-        })
+        return send_email([self.email], '[천원경매] 입찰 확인', html)
 
     def send_outbid_notification(self):
         from auction.main import render_outbid_notification
         html = render_outbid_notification(self)
 
-        client = boto3.client('ses', region_name=AWS_SES_REGION)
-        client.send_email(**{
-            'Source': os.environ['AUCTION_EMAIL_MASTER'],
-            'Destination': {
-                'ToAddresses': [self.email]
-            },
-            'Message': {
-                'Subject': {
-                    'Data': '[천원 경매] Outbid Notification',
-                    'Charset': 'utf-8'
-                },
-                'Body': {
-                    'Html': {
-                        'Data': html,
-                        'Charset': 'utf-8'
-                    }
-                }
-            }
-        })
+        return send_email([self.email], '[천원경매] Outbid Notification', html)

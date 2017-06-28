@@ -10,7 +10,7 @@
 <p>안녕하세요, {{ bid.name }}님.</p>
 
 <p>
-  [천원 경매] 입찰 확인 이메일입니다.
+  [천원경매] 입찰 확인 이메일입니다.
   <a href="{{ host }}{{ url_for('main.view_auction_bids', auction_id=bid.auction.id) }}">
     {{ bid.auction.title }}</a> 매물에
   <b>{{ bid.price|format_currency }}</b>으로 입찰하셨습니다.

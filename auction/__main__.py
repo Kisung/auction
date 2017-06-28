@@ -60,5 +60,29 @@ def update_auction(auction_id, title, description):
         log.info('Auction-{} has been updated.', auction.id)
 
 
+@cli.command()
+@click.argument('auction_id')
+def send_sold_notification(auction_id):
+    """Sends a sold notification given an auction ID."""
+    app = create_app(__name__)
+
+    # NOTE: Without SERVER_NAME the url_for() function won't work. This is a
+    # temporary workaround and we'll dig into this later.
+    app.config['SERVER_NAME'] = ''
+
+    with app.app_context():
+        auction = Auction.query.get(auction_id)
+
+        if not auction:
+            log.warn('Auction-{} is not found.', auction_id)
+            return
+
+        if auction.data and auction.data['notified']:
+            log.warn('Auction-{} is already notified.', auction_id)
+            return
+
+        auction.send_sold_notification()
+
+
 if __name__ == '__main__':
     cli()
