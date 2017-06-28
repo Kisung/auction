@@ -33,11 +33,14 @@ def human_readable(delta):
 # - eu-west-1 (Ireland)
 # - us-east-1 (Virginia)
 # - us-west-2 (Oregon)
-def send_email(to_addresses, subject, body):
+def send_email(to_addresses, subject, body, dry_run=False):
     """Sends an email message via AWS SES.
 
     :param to_addresses: A list of recipient addresses
     """
+
+    if dry_run:
+        return None
 
     client = boto3.client('ses', region_name=AWS_SES_REGION)
     return client.send_email(**{

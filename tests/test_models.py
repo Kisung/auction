@@ -1,3 +1,5 @@
+import pytest
+
 from auction.models import Auction, Bid
 from auction.utils import now
 
@@ -62,3 +64,15 @@ def test_disclosed_price():
     assert bid1.disclosed_price == 1000
     assert bid2.disclosed_price == 1005
     assert bid3.disclosed_price == 1005
+
+
+def test_sold_notification_sent(testapp, db):
+    auction = Auction.create(
+        data={'payment': '(to be announed)', 'sold_notification_sent': False})
+
+    make_bid(auction, 1000)
+
+    auction.send_sold_notification(dry_run=True)
+
+    with pytest.raises(ValueError):
+        auction.send_sold_notification(dry_run=True)

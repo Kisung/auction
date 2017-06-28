@@ -197,7 +197,7 @@ class Auction(CRUDMixin, db.Model):
             if bid.outbidded:
                 bid
 
-    def send_sold_notification(self):
+    def send_sold_notification(self, dry_run=False):
         if not self.data.get('payment'):
             raise ValueError('Payment information is required')
 
@@ -210,7 +210,7 @@ class Auction(CRUDMixin, db.Model):
 
         try:
             resp = send_email([self.winning_bid.email],
-                              '[천원경매] 낙찰', html)
+                              '[천원경매] 낙찰', html, dry_run)
         except:
             # FIXME: Does send_mail even raise an exception?
             # FIXME: Handle the exception
