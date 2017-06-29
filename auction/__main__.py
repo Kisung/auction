@@ -35,12 +35,12 @@ def make_auction(title, description, start_date, duration):
     :param duration: Auction duration in hours
     """
     with create_app(__name__).app_context():
-        now = datetime.utcnow()
+        starts_at = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
         auction = Auction.create(
             title=title,
             description=description,
-            starts_at=datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S'),
-            ends_at=now + timedelta(hours=duration),
+            starts_at=starts_at,
+            ends_at=starts_at + timedelta(hours=duration),
         )
 
         log.info('Auction-{} has been created.', auction.id)
