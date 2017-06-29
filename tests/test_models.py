@@ -11,7 +11,7 @@ def make_bid(auction, price=1000, confirmed=True):
     )
 
 
-def test_current_price(testapp, db):
+def test_current_price():
     auction = Auction.create()
     assert auction.current_price == 1000
 
@@ -28,7 +28,7 @@ def test_current_price(testapp, db):
     assert auction.current_price == 10050
 
 
-def test_disclosed_price(testapp, db):
+def test_disclosed_price():
     auction = Auction.create()
 
     bid1 = make_bid(auction, 1000)

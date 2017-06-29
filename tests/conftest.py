@@ -26,12 +26,12 @@ def app(request):
     return app
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def testapp(app, db):
     return app.test_client()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='module', autouse=True)
 def db(app, request):
     """Session-wide test database."""
     def teardown():
