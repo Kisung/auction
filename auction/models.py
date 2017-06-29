@@ -155,7 +155,8 @@ class Auction(CRUDMixin, db.Model):
         TODO: Think of a better name.
         TODO: Set up some kind of cache.
         """
-        if not self.description.startswith('gdocs://'):
+        if not self.description.startswith('https://docs.google.com') \
+                and not self.description.startswith('gdocs://'):
             raise ValueError('Not a valid Google Docs URL')
 
         url = 'https' + self.description[len('gdocs'):]
