@@ -109,8 +109,11 @@ class Auction(CRUDMixin, db.Model):
         else:
             return 1000
 
-    def has_bidding(self):
-        return len(self.bids.all()) > 0
+    def has_bidding(self, confirmed_only=True):
+        if confirmed_only:
+            return self.confirmed_bids.count() > 0
+        else:
+            return self.bids.count() > 0
 
     @property
     def ordered_bids(self):

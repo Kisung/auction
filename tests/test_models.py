@@ -11,6 +11,26 @@ def make_bid(auction, price=1000, confirmed=True):
     )
 
 
+def test_has_bidding():
+    auction = Auction.create()
+
+    # Initially has no bidding
+    assert not auction.has_bidding(confirmed_only=True)
+    assert not auction.has_bidding(confirmed_only=False)
+
+    make_bid(auction, 1000, confirmed=False)
+
+    # Unconfirmed bid has no effect on the confirmed bids count
+    assert not auction.has_bidding(confirmed_only=True)
+    assert auction.has_bidding(confirmed_only=False)
+
+    make_bid(auction, 1500)
+
+    # Auction now has one confirmed bidding, total of two biddings
+    assert auction.has_bidding(confirmed_only=True)
+    assert auction.has_bidding(confirmed_only=False)
+
+
 def test_current_price():
     auction = Auction.create()
     assert auction.current_price == 1000
