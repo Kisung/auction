@@ -26,14 +26,21 @@ def drop_all():
 @cli.command()
 @click.argument('title')
 @click.argument('description')
-def make_auction(title, description):
+@click.argument('start_date')
+@click.argument('duration', type=int)
+def make_auction(title, description, start_date, duration):
+    """Makes an auction record.
+
+    :param start_date: yyyy-mm-dd HH:MM:SS UTC
+    :param duration: Auction duration in hours
+    """
     with create_app(__name__).app_context():
         now = datetime.utcnow()
         auction = Auction.create(
             title=title,
             description=description,
-            starts_at=now,
-            ends_at=now + timedelta(minutes=30),
+            starts_at=datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S'),
+            ends_at=now + timedelta(hours=duration),
         )
 
         log.info('Auction-{} has been created.', auction.id)
