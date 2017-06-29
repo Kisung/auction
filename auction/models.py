@@ -169,9 +169,17 @@ class Auction(CRUDMixin, db.Model):
         return content
 
     @property
+    def started(self):
+        return now() >= self.starts_at
+
+    @property
     def ended(self):
         """Indicates whether the auction has been ended."""
         return now() >= self.ends_at
+
+    @property
+    def starts_in(self):
+        return self.starts_at - now()
 
     @property
     def remaining(self):

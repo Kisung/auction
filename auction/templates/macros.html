@@ -25,13 +25,19 @@
     <!-- TODO: Show remining time or status -->
     <div class="ui statistic">
       <div class="label">
-        {%- if auction.ended %}
+        {%- if not auction.started %}
+        Starts in
+        {%- elif auction.ended %}
         Ended
         {%- else %}
         Ends in
         {%- endif %}
       </div>
-      {% set delta, unit = auction.remaining|human_readable %}
+      {%- if not auction.started %}
+        {% set delta, unit = auction.starts_in|human_readable %}
+      {%- else %}
+        {% set delta, unit = auction.remaining|human_readable %}
+      {%- endif %}
       <div class="value">
         <div class="help" data-content="{{ auction.ends_at|format_datetime }} UTC">
           {{ delta|abs }}
@@ -47,7 +53,9 @@
 {% endmacro %}
 
 {% macro bidding_button(auction, button=False) %}
-  {%- if auction.ended %}
+  {%- if not auction.started %}
+    <button class="ui button disabled">경매 시작 전입니다</button>
+  {%- elif auction.ended %}
     <button class="ui button disabled">경매가 마감되었습니다</button>
   {%- else %}
     {%- if button %}

@@ -49,6 +49,10 @@ def create_bid():
 
     form = BidForm(request.form, auction, auction=auction)
     if request.method == 'POST' and form.validate():
+        if not auction.started:
+            # TODO: Show this message with a template
+            return 'The auction has not started yet', 403
+
         if auction.ended:
             # TODO: Show this message with a template
             return 'The auction has ended', 403
