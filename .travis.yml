@@ -1,0 +1,32 @@
+sudo: false
+
+language: python
+python:
+  - "3.5"
+
+addons:
+  postgresql: "9.4"
+
+services:
+  - postgresql
+
+env:
+  global:
+    - DB_URL="postgres:///auction"
+    - TEST_DB_URL="postgres:///auction"
+    - PYTHONPATH=.
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r tests/requirements.txt
+  - pip install -e .
+
+before_script:
+  - psql -c 'CREATE DATABASE auction;' -U postgres
+  - auction create_all
+
+script:
+  - py.test -v tests --cov auction --cov-report term-missing
+
+after_success:
+  - coveralls
