@@ -75,6 +75,8 @@ class CRUDMixin(object):
 
 class Auction(CRUDMixin, db.Model):
 
+    __tablename__ = 'auctions'
+
     title = db.Column(db.String)
     description = db.Column(db.Text)
     starts_at = db.Column(db.DateTime(timezone=False))
@@ -230,7 +232,9 @@ class Auction(CRUDMixin, db.Model):
 
 class Bid(CRUDMixin, db.Model):
 
-    auction_id = db.Column(db.BigInteger, db.ForeignKey('auction.id'))
+    __tablename__ = 'bids'
+
+    auction_id = db.Column(db.BigInteger, db.ForeignKey('auctions.id'))
 
     #: Bidder's full name
     name = db.Column(db.String)
