@@ -1,7 +1,7 @@
 from random import randint
 
-from wtforms import BooleanField, Form, StringField
-from wtforms.fields.html5 import EmailField
+from wtforms import BooleanField, Form, SelectField, StringField
+from wtforms.fields.html5 import DateField, EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
 
 from auction.models import Auction
@@ -24,8 +24,8 @@ class ValidPrice(object):
 
         if price < auction.outbidding_price:
             raise ValidationError(
-                'Bidding price must be equal to or greater than the outbidding '
-                'price ({})'.format(auction.outbidding_price))
+                'Bidding price must be equal to or greater than the '
+                'outbidding price ({})'.format(auction.outbidding_price))
 
         bidding_unit = Auction.bidding_price_unit(price)
         if price % bidding_unit != 0:
@@ -50,3 +50,17 @@ class BidForm(Form):
 
 class ConfirmBidForm(Form):
     code = StringField('', [DataRequired()], _name='code')
+
+
+class CreateAuctionForm(Form):
+    title = StringField('상품명', [DataRequired()], _name='title')
+    description = StringField(
+        '상품 설명 (Google Docs)', [DataRequired()], _name='description')
+    starts_at = DateField('시작일', [DataRequired()], _name='starts_at')
+    duration = SelectField(
+        '경매 기간', [DataRequired()],
+        choices=[
+            (4, '4시간'), (8, '8시간'),
+            (24, '1일'), (48, '2일'), (72, '3일')],
+        default=24,
+    )
