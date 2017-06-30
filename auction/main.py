@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -62,7 +61,7 @@ def create_bid():
             name=request.form['name'],
             email=request.form['email'],
             price=parse_price(request.form['price']),
-            bids_at=datetime.utcnow(),
+            bids_at=now(),
             confirmation_code=Bid.generate_confirmation_code(),
         )
         bid.send_confirmation_email()
@@ -85,7 +84,6 @@ def create_bid():
 @main_module.route('/bid/<int:bid_id>/confirm')
 def confirm_bid(bid_id):
     code = request.args.get('code')
-    render = request.args.get('render')
     bid = Bid.query.get_or_404(bid_id)
 
     if os.environ.get('DEBUG') and request.args.get('render'):
@@ -141,6 +139,15 @@ def view_outbid_notification(bid_id):
     return render_outbid_notification(bid)
 
 
+@main_module.route('/auctions/<int:auction_id>/sold')
+def view_sold_notification(auction_id):
+    if not os.environ.get('DEBUG', False):
+        return '', 403
+
+    auction = Auction.query.get_or_404(auction_id)
+    return render_sold_notification(auction)
+
+
 def parse_price(value, currency='KRW'):
     if currency == 'KRW':
         return int(value)
@@ -162,3 +169,10 @@ def render_outbid_notification(bid):
         'host': os.environ['AUCTION_HOST'],
     }
     return render_template('outbid_notification.html', **context)
+
+
+def render_sold_notification(auction):
+    context = {
+        'auction': auction,
+    }
+    return render_template('sold_notification.html', **context)

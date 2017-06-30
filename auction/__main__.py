@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 
 import click
 
@@ -41,6 +42,13 @@ def make_auction(title, description, start_date, duration):
             description=description,
             starts_at=starts_at,
             ends_at=starts_at + timedelta(hours=duration),
+            data={
+                # FIXME: This is a temporary workaround
+                'payment': os.environ['PAYMENT'],
+                # NOTE: We probably need a better name than this...
+                'ending_soon_notification_sent': False,
+                'sold_notification_sent': False,
+            },
         )
 
         log.info('Auction-{} has been created.', auction.id)
@@ -58,6 +66,26 @@ def update_auction(auction_id, title, description):
         db.session.commit()
 
         log.info('Auction-{} has been updated.', auction.id)
+
+
+@cli.command()
+@click.argument('auction_id')
+def send_sold_notification(auction_id):
+    """Sends a sold notification given an auction ID."""
+    app = create_app(__name__)
+
+    # NOTE: Without SERVER_NAME the url_for() function won't work. This is a
+    # temporary workaround and we'll dig into this later.
+    app.config['SERVER_NAME'] = ''
+
+    with app.app_context():
+        auction = Auction.query.get(auction_id)
+
+        if not auction:
+            log.warn('Auction-{} is not found.', auction_id)
+            return
+
+        auction.send_sold_notification()
 
 
 if __name__ == '__main__':

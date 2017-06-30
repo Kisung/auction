@@ -1,25 +1,21 @@
 from datetime import datetime
 import heapq
-import os
 from random import randint
 
 import base62
 from bs4 import BeautifulSoup
-import boto3
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.orm.attributes import flag_modified
 import uuid64
 
 from auction import cache
-from auction.utils import now
+from auction.utils import now, send_email
 
 
 db = SQLAlchemy()
-JsonType = db.String().with_variant(JSON(), 'postgresql')
-
-
-AWS_SES_REGION = 'us-west-2'
+JSONType = db.String().with_variant(JSON(), 'postgresql')
 
 
 class CRUDMixin(object):
@@ -87,6 +83,8 @@ class Auction(CRUDMixin, db.Model):
     starting_price = 1000
 
     bids = db.relationship('Bid', backref='auction', lazy='dynamic')
+
+    data = db.Column(JSONType)
 
     @classmethod
     def bidding_price_unit(cls, price):
@@ -199,6 +197,36 @@ class Auction(CRUDMixin, db.Model):
             if bid.outbidded:
                 bid
 
+    def send_sold_notification(self, dry_run=False):
+        if not self.data.get('payment'):
+            raise ValueError('Payment information is required')
+
+        if self.data.get('sold_notification_sent', False):
+            raise ValueError(
+                'Auction-{0} already has been notified'.format(self.id))
+
+        from auction.main import render_sold_notification
+        html = render_sold_notification(self)
+
+        try:
+            resp = send_email([self.winning_bid.email],
+                              '[천원경매] 낙찰', html, dry_run)
+        except:
+            # FIXME: Does send_mail even raise an exception?
+            # FIXME: Handle the exception
+            pass
+        else:
+            self.data['sold_notification_sent'] = True
+
+            # Without this, the JSON field won't get updated.
+            # Refer https://bashelton.com/2014/03/updating-postgresql-json-fields-via-sqlalchemy/  # noqa
+            # for more details.
+            flag_modified(self, 'data')
+
+            self.save()
+
+            return resp
+
 
 class Bid(CRUDMixin, db.Model):
 
@@ -257,55 +285,17 @@ class Bid(CRUDMixin, db.Model):
         self.confirmed_at = datetime.utcnow()
         db.session.commit()
 
+    # FIXME: send_ functions should be somewhere else
+    # (i.e., under the controller)
+
     def send_confirmation_email(self):
         from auction.main import render_confirmation_email
         html = render_confirmation_email(self)
 
-        # NOTE: as of June 13, 2017, SES is only supported in the following
-        # regions:
-        # - eu-west-1 (Ireland)
-        # - us-east-1 (Virginia)
-        # - us-west-2 (Oregon)
-        client = boto3.client('ses', region_name=AWS_SES_REGION)
-        client.send_email(**{
-            'Source': os.environ['AUCTION_EMAIL_MASTER'],
-            'Destination': {
-                'ToAddresses': [self.email]
-            },
-            'Message': {
-                'Subject': {
-                    'Data': '[천원 경매] 입찰 확인',
-                    'Charset': 'utf-8'
-                },
-                'Body': {
-                    'Html': {
-                        'Data': html,
-                        'Charset': 'utf-8'
-                    }
-                }
-            }
-        })
+        return send_email([self.email], '[천원경매] 입찰 확인', html)
 
     def send_outbid_notification(self):
         from auction.main import render_outbid_notification
         html = render_outbid_notification(self)
 
-        client = boto3.client('ses', region_name=AWS_SES_REGION)
-        client.send_email(**{
-            'Source': os.environ['AUCTION_EMAIL_MASTER'],
-            'Destination': {
-                'ToAddresses': [self.email]
-            },
-            'Message': {
-                'Subject': {
-                    'Data': '[천원 경매] Outbid Notification',
-                    'Charset': 'utf-8'
-                },
-                'Body': {
-                    'Html': {
-                        'Data': html,
-                        'Charset': 'utf-8'
-                    }
-                }
-            }
-        })
+        return send_email([self.email], '[천원경매] Outbid Notification', html)
