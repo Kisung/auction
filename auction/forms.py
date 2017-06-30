@@ -1,11 +1,15 @@
+from datetime import datetime
+import re
 from random import randint
 
 from wtforms import BooleanField, Form, SelectField, StringField
-from wtforms.fields.html5 import DateField, EmailField
+from wtforms.fields.html5 import DateTimeField, EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
 
 from auction.models import Auction
 
+
+# TODO: Move these validators somewhere else
 
 class ValidPrice(object):
 
@@ -33,6 +37,15 @@ class ValidPrice(object):
                 'Price must be an increment of {}'.format(bidding_unit))
 
 
+class ValidGDocsURL(object):
+
+    def __call__(self, form, field):
+        pattern = r'https://docs.google.com/document/d/[0-9A-Za-z_-]+/pub'
+        if not re.match(pattern, field.data):
+            raise ValidationError(
+                '{0} is not a valid Google Docs URL'.format(field.data))
+
+
 # NOTE: Is there any way to automatically generate this form from the model?
 class BidForm(Form):
     name = StringField('이름', [DataRequired()], _name='name')
@@ -55,10 +68,14 @@ class ConfirmBidForm(Form):
 class CreateAuctionForm(Form):
     title = StringField('상품명', [DataRequired()], _name='title')
     description = StringField(
-        '상품 설명 (Google Docs)', [DataRequired()], _name='description')
-    starts_at = DateField('시작일', [DataRequired()], _name='starts_at')
+        '상품 설명 (Google Docs)', [DataRequired(), ValidGDocsURL()],
+        _name='description')
+    starts_at = DateTimeField(
+        '시작일', [DataRequired()], _name='starts_at',
+        default=datetime.utcnow())
     duration = SelectField(
         '경매 기간', [DataRequired()],
+        coerce=int,
         choices=[
             (4, '4시간'), (8, '8시간'),
             (24, '1일'), (48, '2일'), (72, '3일')],
