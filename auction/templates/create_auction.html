@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% from 'macros.html' import auction_status, bidding_button, render_field %}
+{% block content %}
+
+<h1>상품 등록</h1>
+
+<form class="ui form" method="post"
+  action="{{ url_for('main.create_auction') }}">
+
+  {{ render_field(form.title, placeholder='') }}
+  {{ render_field(form.description, placeholder='') }}
+
+  <!-- TODO: I'd like to make this as a premium feature -->
+  {{ render_field(form.starts_at, placeholder='') }}
+
+  {{ render_field(form.duration, placeholder='') }}
+
+  <div class="ui field" style="margin-top:1em">
+    <button class="ui primary button">등록</button>
+  </div>
+</form>
+
+{% endblock %}

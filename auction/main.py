@@ -2,7 +2,7 @@ import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from auction.forms import BidForm, ConfirmBidForm
+from auction.forms import BidForm, ConfirmBidForm, CreateAuctionForm
 from auction.models import Auction, Bid, User
 from auction.utils import now
 
@@ -18,6 +18,15 @@ def list_auctions():
         'auctions': auctions,
     }
     return render_template('list_auctions.html', **context)
+
+
+@main_module.route('/actions/new')
+def create_auction():
+    form = CreateAuctionForm()
+    context = {
+        'form': form,
+    }
+    return render_template('create_auction.html', **context)
 
 
 @main_module.route('/auction/<int:auction_id>')  # legacy
@@ -155,6 +164,12 @@ def view_sold_notification(auction_id):
 
     auction = Auction.query.get_or_404(auction_id)
     return render_sold_notification(auction)
+
+
+@main_module.route('/sellers/register')
+def register_seller():
+    context = {}
+    return render_template('register_seller.html', **context)
 
 
 def parse_price(value, currency='KRW'):
