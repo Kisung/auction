@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -20,9 +21,19 @@ def list_auctions():
     return render_template('list_auctions.html', **context)
 
 
-@main_module.route('/actions/new')
+@main_module.route('/actions/new', methods=['GET', 'POST'])
 def create_auction():
-    form = CreateAuctionForm()
+    form = CreateAuctionForm(request.form)
+    if request.method == 'POST' and form.validate():
+        starts_at = datetime.utcnow()
+        auction = Auction.create(
+            title=form.title.data,
+            description=form.description.data,
+            starts_at=starts_at,
+            ends_at=starts_at + timedelta(hours=form.duration.data),
+        )
+        return redirect(url_for('main.view_auction', auction_id=auction.id))
+
     context = {
         'form': form,
     }
