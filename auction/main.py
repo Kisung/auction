@@ -32,7 +32,7 @@ def view_auction(auction_id):
     return render_template('view_auction.html', **context)
 
 
-@main_module.route('/auction/<int:auction_id>/bids')
+@main_module.route('/auctions/<int:auction_id>/bids')
 def view_auction_bids(auction_id):
     auction = Auction.query.get_or_404(auction_id)
     context = {
@@ -41,7 +41,7 @@ def view_auction_bids(auction_id):
     return render_template('view_auction_bids.html', **context)
 
 
-@main_module.route('/bid', methods=['GET', 'POST'])
+@main_module.route('/bids', methods=['GET', 'POST'])
 def create_bid():
     auction_id = int(request.args['auction_id'])
     auction = Auction.query.get_or_404(auction_id)
@@ -81,7 +81,7 @@ def create_bid():
     return render_template('create_bid.html', **context)
 
 
-@main_module.route('/bid/<int:bid_id>/confirm')
+@main_module.route('/bids/<int:bid_id>/confirm')
 def confirm_bid(bid_id):
     code = request.args.get('code')
     bid = Bid.query.get_or_404(bid_id)
@@ -130,7 +130,7 @@ def confirm_bid(bid_id):
                             auction_id=bid.auction.id))
 
 
-@main_module.route('/bid/<int:bid_id>/outbidded')
+@main_module.route('/bids/<int:bid_id>/outbidded')
 def view_outbid_notification(bid_id):
     if not os.environ.get('DEBUG', False):
         return '', 403
