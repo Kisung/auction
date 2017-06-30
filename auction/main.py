@@ -58,9 +58,9 @@ def create_bid():
 
         bid = Bid.create(
             auction_id=auction_id,
-            name=request.form['name'],
-            email=request.form['email'],
-            price=parse_price(request.form['price']),
+            name=form.name.data,
+            email=form.email.data,
+            price=parse_price(form.price.data),
             bids_at=now(),
             confirmation_code=Bid.generate_confirmation_code(),
         )
