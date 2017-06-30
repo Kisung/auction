@@ -39,9 +39,10 @@ class ValidPrice(object):
 
 class ValidGDocsURL(object):
 
+    pattern = r'https://docs.google.com/document/d/[0-9A-Za-z_-]+/pub'
+
     def __call__(self, form, field):
-        pattern = r'https://docs.google.com/document/d/[0-9A-Za-z_-]+/pub'
-        if not re.match(pattern, field.data):
+        if not re.match(self.pattern, field.data):
             raise ValidationError(
                 '{0} is not a valid Google Docs URL'.format(field.data))
 

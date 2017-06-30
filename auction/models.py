@@ -1,6 +1,7 @@
 from datetime import datetime
 import hashlib
 import heapq
+import re
 from random import randint
 
 import base62
@@ -11,7 +12,7 @@ from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm.attributes import flag_modified
 import uuid64
 
-from auction import cache
+from auction import cache, log
 from auction.utils import is_hangul, now, send_email
 
 
@@ -161,13 +162,19 @@ class Auction(CRUDMixin, db.Model):
         TODO: Think of a better name.
         TODO: Set up some kind of cache.
         """
-        if not self.description.startswith('https://docs.google.com') \
-                and not self.description.startswith('gdocs://'):
+        from auction.forms import ValidGDocsURL
+
+        if not re.match(ValidGDocsURL.pattern, self.description):
             raise ValueError('Not a valid Google Docs URL')
 
-        url = 'https' + self.description[len('gdocs'):]
-
+        url = self.description
         resp = requests.get(url)
+        if resp.status_code != 200:
+            log.error('Could not fetch Google Docs: {0}', resp.text)
+            # FIXME: Not sure if returning an HTML is a good idea
+            return '<div class="ui error message">Could not fetch Google ' \
+                   'Docs ({0})</div>'.format(url)
+
         soup = BeautifulSoup(resp.content)
         content = soup.find(id='contents')
         # TODO: Select div#contents' child nodes
