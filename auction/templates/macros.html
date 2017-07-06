@@ -14,6 +14,7 @@
         {{ auction.current_price|format_currency }}
       </div>
     </div>
+
     <div class="statistic">
       <div class="label">
         # of Bids
@@ -22,6 +23,7 @@
         {{ auction.confirmed_bids.count() }}
       </div>
     </div>
+
     <!-- TODO: Show remining time or status -->
     <div class="ui statistic">
       <div class="label">
@@ -81,4 +83,35 @@
       {%- endfor %}
     {%- endif %}
   </div>
+{% endmacro %}
+
+{% macro list_auctions(auctions) %}
+  <table class="ui table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Current Price</th>
+        <th>Ending Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for auction in auctions %}
+      <tr>
+        <td>
+          <a href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
+            {{ auction.title }}
+          </a>
+        </td>
+        <td>{{ auction.current_price|format_currency }}</td>
+        <td>
+          {%- if auction.ended %}
+          <span class="ui text disabled">Ended</span>
+          {%- else %}
+          {{ auction.ends_at|format_datetime }} UTC
+          {%- endif %}
+        </td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
 {% endmacro %}
