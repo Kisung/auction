@@ -1,33 +1,7 @@
 {% extends 'layout.html' %}
+{% from 'macros.html' import list_auctions %}
 {% block content %}
 
-<table class="ui table">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Current Price</th>
-      <th>Ending Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    {%- for auction in auctions %}
-    <tr class="{% if auction.ended %}disabled{% endif %}">
-      <td>
-        <a href="{{ url_for('main.view_auction', auction_id=auction.id) }}">
-          {{ auction.title }}
-        </a>
-      </td>
-      <td>{{ auction.current_price|format_currency }}</td>
-      <td>
-        {%- if auction.ended %}
-        Ended
-        {%- else %}
-        {{ auction.ends_at|format_datetime }} UTC
-        {%- endif %}
-      </td>
-    </tr>
-    {%- endfor %}
-  </tbody>
-</table>
+{{ list_auctions(auctions) }}
 
 {% endblock %}

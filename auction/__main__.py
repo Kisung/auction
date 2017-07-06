@@ -4,7 +4,8 @@ import os
 import click
 
 from auction import create_app, log
-from auction.models import Auction, db
+from auction.models import Auction, db, User
+from auction.utils import now
 
 
 @click.group()
@@ -22,6 +23,25 @@ def create_all():
 def drop_all():
     with create_app(__name__).app_context():
         db.drop_all()
+
+
+@cli.command()
+@click.argument('family_name')
+@click.argument('given_name')
+@click.argument('email')
+@click.argument('organization')
+def register_user(family_name, given_name, email, organization):
+    """Registers a user."""
+    with create_app(__name__).app_context():
+        user = User.create(
+            registered_at=now(),
+            family_name=family_name,
+            given_name=given_name,
+            email=email,
+            organization=organization
+        )
+
+        log.info('User-{} has been registered.', user.id)
 
 
 @cli.command()

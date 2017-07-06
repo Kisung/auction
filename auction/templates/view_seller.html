@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% from 'macros.html' import list_auctions %}
+{% block content %}
+<h1 class="ui header">{{ seller.localized_name }}</h1>
+
+<h2>Auctions</h2>
+
+{{ list_auctions(seller.auctions) }}
+
+{% endblock %}
+

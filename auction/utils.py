@@ -28,6 +28,15 @@ def human_readable(delta):
         return round(dt / 86400), 'days'
 
 
+def is_hangul(ch):
+    """Copied from https://github.com/suminb/hanja/blob/master/hanja/hangul.py
+    """
+    if ch is None:
+        return False
+    else:
+        return ord(ch) >= 0xac00 and ord(ch) <= 0xd7a3
+
+
 # NOTE: as of June 13, 2017, SES is only supported in the following
 # regions:
 # - eu-west-1 (Ireland)

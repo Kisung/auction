@@ -1,4 +1,5 @@
 from datetime import datetime
+import hashlib
 import heapq
 from random import randint
 
@@ -11,11 +12,14 @@ from sqlalchemy.orm.attributes import flag_modified
 import uuid64
 
 from auction import cache
-from auction.utils import now, send_email
+from auction.utils import is_hangul, now, send_email
 
 
 db = SQLAlchemy()
 JSONType = db.String().with_variant(JSON(), 'postgresql')
+
+
+__all__ = ['Auction', 'Bid', 'User']
 
 
 class CRUDMixin(object):
@@ -76,6 +80,8 @@ class CRUDMixin(object):
 class Auction(CRUDMixin, db.Model):
 
     __tablename__ = 'auctions'
+
+    seller_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
 
     title = db.Column(db.String)
     description = db.Column(db.Text)
@@ -303,3 +309,35 @@ class Bid(CRUDMixin, db.Model):
         html = render_outbid_notification(self)
 
         return send_email([self.email], '[천원경매] Outbid Notification', html)
+
+
+class User(CRUDMixin, db.Model):
+
+    __tablename__ = 'users'
+
+    registered_at = db.Column(db.DateTime(timezone=False))
+
+    family_name = db.Column(db.String)
+    given_name = db.Column(db.String)
+    email = db.Column(db.String)
+    organization = db.Column(db.String)
+
+    auctions = db.relationship('Auction', backref='seller', lazy='dynamic')
+
+    data = db.Column(JSONType)
+
+    @property
+    def localized_name(self):
+        # TODO: Deal with other locales
+        if all(is_hangul(x) for x in self.family_name) \
+                and all(is_hangul(x) for x in self.given_name):
+            return '{0}{1}'.format(self.family_name, self.given_name)
+        else:
+            return '{1} {0}'.format(self.family_name, self.given_name)
+
+    @property
+    def gravater_url(self):
+        digest = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        url = 'https://www.gravatar.com/avatar/{0}?size=40'.format(digest)
+
+        return url
