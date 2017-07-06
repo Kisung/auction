@@ -15,5 +15,7 @@
 {{ bidding_button(auction) }}
 <a href="{{ url_for('main.view_auction_bids', auction_id=auction.id) }}"
   class="ui button">진행 상황 보기</a>
+<a href="{{ url_for('main.view_seller', seller_id=auction.seller_id) }}"
+  class="ui button">판매자: {{ auction.seller.localized_name }}</a>
 
 {% endblock %}

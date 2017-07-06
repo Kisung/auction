@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from auction.forms import BidForm, ConfirmBidForm
-from auction.models import Auction, Bid
+from auction.models import Auction, Bid, User
 from auction.utils import now
 
 
@@ -128,6 +128,15 @@ def confirm_bid(bid_id):
     }, 'modal')
     return redirect(url_for('main.view_auction_bids',
                             auction_id=bid.auction.id))
+
+
+@main_module.route('/sellers/<int:seller_id>')
+def view_seller(seller_id):
+    seller = User.query.get_or_404(seller_id)
+    context = {
+        'seller': seller,
+    }
+    return render_template('view_seller.html', **context)
 
 
 @main_module.route('/bids/<int:bid_id>/outbidded')
