@@ -8,7 +8,7 @@
   action="{{ url_for('main.create_auction') }}">
 
   {{ render_field(form.title, placeholder='') }}
-  {{ render_field(form.description, placeholder='') }}
+  {{ render_field(form.description, placeholder='https://docs.google.com/document/d/.../pub') }}
 
   <!-- TODO: I'd like to make this as a premium feature -->
   <!-- {{ render_field(form.starts_at, placeholder='') }} -->
