@@ -102,10 +102,13 @@
             {{ auction.title }}
           </a>
         </td>
-        <td>{{ auction.current_price|format_currency }}</td>
+        <td class="{% if auction.confirmed_bids.count() == 0 %}disabled{% endif %}">
+          {{ auction.current_price|format_currency }}
+        </td>
         <td>
           {%- if auction.ended %}
-          <span class="ui text disabled">Ended</span>
+          <!-- FIXME: Is there any substitute for 'disable' for <span>? -->
+          <span style="color:rgba(40, 40, 40, .3)">Ended</span>
           {%- else %}
           {{ auction.ends_at|format_datetime }} UTC
           {%- endif %}
