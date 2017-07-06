@@ -38,5 +38,5 @@ def upgrade():
 
 def downgrade():
     op.drop_constraint(None, 'auctions', type_='foreignkey')
-    op.drop_column('auctions', 'user_id')
+    op.drop_column('auctions', 'seller_id')
     op.drop_table('users')
