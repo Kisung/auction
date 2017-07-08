@@ -4,7 +4,7 @@ import sys
 
 from babel.numbers import format_currency
 from flask import Flask
-from flask.ext.cache import Cache
+from flask_cache import Cache
 from logbook import Logger, StreamHandler
 
 
@@ -31,8 +31,7 @@ def create_app(name=__name__, config={},
 
     app.config.update(config)
 
-    global cache
-    cache = Cache(app, config={
+    cache.init_app(app, config={
         'CACHE_TYPE': 'simple',
     })
 
