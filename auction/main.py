@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required
 
 from auction.forms import BidForm, ConfirmBidForm, CreateAuctionForm
 from auction.models import Auction, Bid, User
@@ -22,6 +23,7 @@ def list_auctions():
 
 
 @main_module.route('/actions/new', methods=['GET', 'POST'])
+@login_required
 def create_auction():
     form = CreateAuctionForm(request.form)
     if request.method == 'POST' and form.validate():
