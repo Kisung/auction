@@ -3,7 +3,7 @@ import re
 from random import randint
 
 from flask_wtf import Form
-from wtforms import BooleanField, Form, SelectField, StringField
+from wtforms import BooleanField, PasswordField, SelectField, StringField
 from wtforms.fields.html5 import DateTimeField, EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
 
