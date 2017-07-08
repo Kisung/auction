@@ -10,6 +10,11 @@ from auction.utils import now
 main_module = Blueprint('main', __name__, template_folder='templates')
 
 
+@main_module.route('/')
+def index():
+    return redirect(url_for('main.list_auctions'))
+
+
 @main_module.route('/auctions')
 def list_auctions():
     auctions = Auction.query \
