@@ -4,9 +4,8 @@
 
 <h1>상품 등록</h1>
 
-<form class="ui form" method="post"
-  action="{{ url_for('main.create_auction') }}">
-
+<form class="ui form" method="post">
+  {{ form.csrf_token }}
   {{ render_field(form.title, placeholder='') }}
   {{ render_field(form.description, placeholder='https://docs.google.com/document/d/.../pub') }}
 

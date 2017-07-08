@@ -60,7 +60,8 @@ class BidForm(Form):
     def __init__(self, formdata=None, obj=None, prefix='', auction=None,
                  **kwargs):
         self.auction = auction
-        super(BidForm, self).__init__(formdata, obj, prefix, **kwargs)
+        super(BidForm, self).__init__(formdata=formdata, obj=obj,
+                                      prefix=prefix, **kwargs)
 
 
 class ConfirmBidForm(Form):
