@@ -6,6 +6,7 @@ from random import randint
 
 import base62
 from bs4 import BeautifulSoup
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
@@ -318,7 +319,7 @@ class Bid(CRUDMixin, db.Model):
         return send_email([self.email], '[천원경매] Outbid Notification', html)
 
 
-class User(CRUDMixin, db.Model):
+class User(CRUDMixin, db.Model, UserMixin):
 
     __tablename__ = 'users'
 
@@ -348,3 +349,15 @@ class User(CRUDMixin, db.Model):
         url = 'https://www.gravatar.com/avatar/{0}?size=40'.format(digest)
 
         return url
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)

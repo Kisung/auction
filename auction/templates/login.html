@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% from 'macros.html' import render_field, render_field_errors %}
+{% block content %}
+
+<div class="ui middle aligned center aligned grid">
+  <div class="column" style="margin:4em 0 4em 0; max-width:500px">
+    <h2 class="ui header">Login to your account</h2>
+
+    <form class="ui large form" method="post">
+      {{ form.csrf_token }}
+      <div class="ui stacked segment">
+        <!--
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        -->
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" name="email" placeholder="이메일">
+          </div>
+          {{ render_field_errors(form.email.errors) }}
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="비밀번호">
+          </div>
+          {{ render_field_errors(form.password.errors) }}
+        </div>
+
+        <button class="ui fluid large primary button">Login</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

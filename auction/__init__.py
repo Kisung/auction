@@ -5,6 +5,7 @@ import sys
 from babel.numbers import format_currency
 from flask import Flask
 from flask_cache import Cache
+from flask_login import LoginManager
 from logbook import Logger, StreamHandler
 
 
@@ -17,6 +18,7 @@ StreamHandler(sys.stderr).push_application()
 log = Logger('auction')
 
 cache = Cache()
+login_manager = LoginManager()
 
 
 def create_app(name=__name__, config={},
@@ -35,11 +37,17 @@ def create_app(name=__name__, config={},
         'CACHE_TYPE': 'simple',
     })
 
+    login_manager.init_app(app)
+    login_manager.login_view = 'user.login'
+
     from auction.models import db
     db.init_app(app)
 
     from auction.main import main_module
     app.register_blueprint(main_module, url_prefix='')
+
+    from auction.user import user_module
+    app.register_blueprint(user_module, url_prefix='/users')
 
     from auction.api import api_module
     app.register_blueprint(api_module, url_prefix='/api/v1')

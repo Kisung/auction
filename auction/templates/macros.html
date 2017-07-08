@@ -75,14 +75,18 @@
       {{ field.label }}
     {%- endif %}
     {{ field(**kwargs)|safe }}
-    {%- if field.errors %}
-      {%- for error in field.errors %}
-      <div class="ui pointing red basic label">
-        {{ error }}
-      </div>
-      {%- endfor %}
-    {%- endif %}
+    {{ render_field_errors(field.errors) }}
   </div>
+{% endmacro %}
+
+{% macro render_field_errors(errors) %}
+  {%- if errors %}
+    {%- for error in errors %}
+    <div class="ui pointing red basic label">
+      {{ error }}
+    </div>
+    {%- endfor %}
+  {%- endif %}
 {% endmacro %}
 
 {% macro list_auctions(auctions) %}
