@@ -197,14 +197,6 @@ class Auction(CRUDMixin, db.Model):
         """
         return self.confirmed_bids.limit(1).first()
 
-    def notify_outbidded_participants(self, except_=None):
-        for bid in self.confirmed_bids:
-            if except_ is not None and bid == except_:
-                continue
-
-            if bid.outbidded:
-                bid
-
     def send_sold_notification(self, dry_run=False):
         if not self.data.get('payment'):
             raise ValueError('Payment information is required')
