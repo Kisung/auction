@@ -1,9 +1,11 @@
+from datetime import timedelta
 import os
 
 import pytest
 
 from auction import create_app
-from auction.models import db as _db
+from auction.models import Auction, Bid, db as _db, User
+from auction.utils import now
 
 
 @pytest.fixture(scope='module')
@@ -11,7 +13,7 @@ def app(request):
     """Session-wide test `Flask` application."""
     settings_override = {
         'TESTING': True,
-        'SERVER_NAME': '',
+        'SERVER_NAME': 'localhost',
     }
     settings_override['SQLALCHEMY_DATABASE_URI'] = os.environ['TEST_DB_URL']
     app = create_app(__name__, config=settings_override)
@@ -29,9 +31,10 @@ def app(request):
     return app
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def testapp(app, db):
-    return app.test_client()
+    with app.app_context():
+        yield app.test_client()
 
 
 @pytest.fixture(scope='module', autouse=True)
@@ -49,6 +52,44 @@ def db(app, request):
         _db.create_all()
 
         yield _db
+
+
+@pytest.fixture
+def make_auction(make_user):
+    def make(seller=None):
+        if seller is None:
+            seller = make_user()
+
+        starts_at = now()
+        return Auction.create(
+            starts_at=starts_at,
+            ends_at=starts_at + timedelta(hours=24),
+            seller_id=seller.id,
+        )
+    return make
+
+
+@pytest.fixture
+def make_bid():
+    def make(auction, price=1000, confirmed=True):
+        return Bid.create(
+            auction_id=auction.id,
+            price=price,
+            bids_at=now(),
+            confirmed_at=now() if confirmed else None,
+        )
+    return make
+
+
+@pytest.fixture
+def make_user():
+    def make():
+        return User.create(
+            email='jason.bourne@cia.giv',
+            family_name='Bourne',
+            given_name='Jason',
+        )
+    return make
 
 
 def teardown(db, record):

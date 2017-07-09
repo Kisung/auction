@@ -4,16 +4,7 @@ from auction.models import Auction, Bid
 from auction.utils import now
 
 
-def make_bid(auction, price=1000, confirmed=True):
-    return Bid.create(
-        auction_id=auction.id,
-        price=price,
-        bids_at=now(),
-        confirmed_at=now() if confirmed else None,
-    )
-
-
-def test_has_bidding():
+def test_has_bidding(make_bid):
     auction = Auction.create()
 
     # Initially has no bidding
@@ -33,7 +24,7 @@ def test_has_bidding():
     assert auction.has_bidding(confirmed_only=False)
 
 
-def test_current_price():
+def test_current_price(make_bid):
     auction = Auction.create()
     assert auction.current_price == 1000
 
@@ -50,7 +41,7 @@ def test_current_price():
     assert auction.current_price == 10050
 
 
-def test_disclosed_price():
+def test_disclosed_price(make_bid):
     auction = Auction.create()
 
     bid1 = make_bid(auction, 1000)
@@ -66,7 +57,7 @@ def test_disclosed_price():
     assert bid3.disclosed_price == 1005
 
 
-def test_outbidding_price():
+def test_outbidding_price(make_bid):
     auction = Auction.create()
     assert auction.outbidding_price == 1000
 
@@ -84,7 +75,7 @@ def test_outbidding_price():
     assert auction.outbidding_price == 5020
 
 
-def test_sold_notification_sent(testapp, db):
+def test_sold_notification_sent(testapp, db, make_bid):
     auction = Auction.create(
         data={'payment': '(to be announed)', 'sold_notification_sent': False})
 
