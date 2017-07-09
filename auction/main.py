@@ -25,7 +25,6 @@ def list_auctions():
     return render_template('list_auctions.html', **context)
 
 
-@main_module.route('/auction/<int:auction_id>')  # legacy
 @main_module.route('/auctions/<int:auction_id>')
 def view_auction(auction_id):
     auction = Auction.query.get_or_404(auction_id)
