@@ -324,11 +324,12 @@ class User(CRUDMixin, db.Model, UserMixin):
     __tablename__ = 'users'
 
     registered_at = db.Column(db.DateTime(timezone=False))
+    social_id = db.Column(db.String, index=True)
 
-    family_name = db.Column(db.String)
-    given_name = db.Column(db.String)
+    family_name = db.Column(db.String, nullable=True)
+    given_name = db.Column(db.String, nullable=True)
     email = db.Column(db.String)
-    organization = db.Column(db.String)
+    organization = db.Column(db.String, nullable=True)
 
     auctions = db.relationship('Auction', backref='seller', lazy='dynamic')
 

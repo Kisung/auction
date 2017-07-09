@@ -31,6 +31,21 @@ def create_app(name=__name__, config={},
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['DEBUG'] = bool(os.environ.get('DEBUG', False))
 
+    app.config['OAUTH_CREDENTIALS'] = {
+        'google': {
+            'id': os.environ['GOOGLE_OAUTH_ID'],
+            'secret': os.environ['GOOGLE_OAUTH_SECRET'],
+        },
+        'facebook': {
+            'id': '',
+            'secret': '',
+        },
+        'twitter': {
+            'id': '',
+            'secret': '',
+        },
+    }
+
     app.config.update(config)
 
     cache.init_app(app, config={

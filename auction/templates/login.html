@@ -29,6 +29,8 @@
         </div>
 
         <button class="ui fluid large primary button">Login</button>
+        <a href="{{ url_for('user.oauth_authorize', provider='google') }}"
+          class="ui fluid large button">Login with Google</a>
       </div>
     </form>
 
