@@ -66,6 +66,24 @@ def test_disclosed_price():
     assert bid3.disclosed_price == 1005
 
 
+def test_outbidding_price():
+    auction = Auction.create()
+    assert auction.outbidding_price == 1000
+
+    bid = make_bid(auction, 1000)
+    assert auction.outbidding_price == 1005
+
+    bid.delete()
+    make_bid(auction, 5000)
+    assert auction.outbidding_price == 1005
+
+    make_bid(auction, 5000)
+    assert auction.outbidding_price == 5010
+
+    make_bid(auction, 6000)
+    assert auction.outbidding_price == 5020
+
+
 def test_sold_notification_sent(testapp, db):
     auction = Auction.create(
         data={'payment': '(to be announed)', 'sold_notification_sent': False})
