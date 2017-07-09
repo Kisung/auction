@@ -6,17 +6,19 @@
   <div class="column" style="margin:4em 0 4em 0; max-width:500px">
     <h2 class="ui header">Login to your account</h2>
 
+    {% if errors %}
+      {% for error in errors %}
+        <div class="ui error message">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
+
     <form class="ui large form" method="post">
       {{ form.csrf_token }}
       <div class="ui stacked segment">
-        <!--
-        {{ render_field(form.email) }}
-        {{ render_field(form.password) }}
-        -->
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="email" placeholder="이메일">
+            <input type="text" name="email" value="{{ form.email.data }}" placeholder="이메일">
           </div>
           {{ render_field_errors(form.email.errors) }}
         </div>
@@ -28,9 +30,13 @@
           {{ render_field_errors(form.password.errors) }}
         </div>
 
-        <button class="ui fluid large primary button">Login</button>
-        <a href="{{ url_for('user.oauth_authorize', provider='google') }}"
-          class="ui fluid large button">Login with Google</a>
+        <div class="field">
+          <button class="ui fluid large primary button">Login</button>
+        </div>
+        <div class="field">
+          <a href="{{ url_for('user.oauth_authorize', provider='google') }}"
+            class="ui fluid large button">Login with Google</a>
+        </div>
       </div>
     </form>
 

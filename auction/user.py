@@ -19,17 +19,15 @@ def load_user(user_id):
 
 @user_module.route('/login', methods=['GET', 'POST'])
 def login():
+    """This method is depreciated. We will no longer support in-house user
+    authentication.
+    """
     form = LoginForm(request.form)
+    context = {'form': form, 'errors': []}
     if form.validate_on_submit():
-        user = User.query.filter(User.email == form.email.data).first()
-        # FIXME: Check for password
-        login_user(user)
+        context['errors'].append('Invalid email or password')
 
-        # TODO: Check if safe to redirect
-        url = request.args.get('url')
-        return redirect(url or url_for('main.list_auctions'))
-
-    return render_template('login.html', form=form)
+    return render_template('login.html', **context)
 
 
 @user_module.route('/logout')
