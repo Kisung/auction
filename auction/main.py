@@ -25,6 +25,9 @@ def list_auctions():
 @main_module.route('/actions/new', methods=['GET', 'POST'])
 @login_required
 def create_auction():
+    if not current_user.is_authorized_seller():
+        return 'Unauthorized seller', 403
+
     form = CreateAuctionForm(request.form)
     if form.validate_on_submit():
         starts_at = now()

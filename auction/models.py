@@ -351,14 +351,18 @@ class User(CRUDMixin, db.Model, UserMixin):
 
         return url
 
-    def is_authenticated(self):
-        return True
+    # def is_authenticated(self):
+    #     return True
 
-    def is_active(self):
-        return True
+    # def is_active(self):
+    #     return True
 
-    def is_anonymous(self):
-        return False
+    # def is_anonymous(self):
+    #     return False
 
-    def get_id(self):
-        return str(self.id)
+    # def get_id(self):
+    #     return str(self.id)
+
+    def is_authorized_seller(self):
+        return self.data is not None \
+            and self.data.get('authorized_seller', False)
