@@ -47,12 +47,12 @@ def oauth_authorize(provider):
 @user_module.route('/callback/<provider>')
 def oauth_callback(provider):
     if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.list_auctions'))
     oauth = OAuthSignIn.get_provider(provider)
     social_id, username, email = oauth.callback()
     if social_id is None:
         flash('Authentication failed.')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.list_auctions'))
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
         user = User.create(
@@ -61,4 +61,4 @@ def oauth_callback(provider):
             email=email,
         )
     login_user(user, True)
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.list_auctions'))
