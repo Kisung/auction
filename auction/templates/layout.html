@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="/assets/semantic/dist/semantic.min.css">
   <style>
     body > div.content {
-      margin: 4em 0 2em 0;
+      margin: 5.5em 0 3em 0;
     }
   </style>
 
@@ -24,6 +24,19 @@
         천원 경매
       </a>
       <a href="{{ url_for('main.list_auctions') }}" class="item">진행중인 경매</a>
+      <div class="ui simple dropdown item">
+        판매 <i class="dropdown icon"></i>
+        <div class="menu">
+          <a href="{{ url_for('main.create_auction') }}" class="item">상품 등록</a>
+          <a href="{{ url_for('main.register_seller') }}" class="item">판매자 등록</a>
+        </div>
+      </div>
+
+      <div class="right menu">
+        {%- if current_user.is_authenticated %}
+        <a href="{{ url_for('user.logout') }}" class="item">Logout</a>
+        {%- endif %}
+      </div>
 		</div>
   </div>
 

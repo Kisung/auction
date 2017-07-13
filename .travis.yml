@@ -26,6 +26,8 @@ before_script:
   - auction create_all
 
 script:
+  - export GOOGLE_OAUTH_ID=$GOOGLE_OAUTH_ID
+  - export GOOGLE_OAUTH_SECRET=$GOOGLE_OAUTH_SECRET
   - py.test -v tests --cov auction --cov-report term-missing
 
 after_success:

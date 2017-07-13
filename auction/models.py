@@ -1,17 +1,19 @@
 from datetime import datetime
 import hashlib
 import heapq
+import re
 from random import randint
 
 import base62
 from bs4 import BeautifulSoup
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 import requests
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm.attributes import flag_modified
 import uuid64
 
-from auction import cache
+from auction import cache, log
 from auction.utils import is_hangul, now, send_email
 
 
@@ -161,13 +163,19 @@ class Auction(CRUDMixin, db.Model):
         TODO: Think of a better name.
         TODO: Set up some kind of cache.
         """
-        if not self.description.startswith('https://docs.google.com') \
-                and not self.description.startswith('gdocs://'):
+        from auction.forms import ValidGDocsURL
+
+        if not re.match(ValidGDocsURL.pattern, self.description):
             raise ValueError('Not a valid Google Docs URL')
 
-        url = 'https' + self.description[len('gdocs'):]
-
+        url = self.description
         resp = requests.get(url)
+        if resp.status_code != 200:
+            log.error('Could not fetch Google Docs: {0}', resp.text)
+            # FIXME: Not sure if returning an HTML is a good idea
+            return '<div class="ui error message">Could not fetch Google ' \
+                   'Docs ({0})</div>'.format(url)
+
         soup = BeautifulSoup(resp.content)
         content = soup.find(id='contents')
         # TODO: Select div#contents' child nodes
@@ -303,16 +311,17 @@ class Bid(CRUDMixin, db.Model):
         return send_email([self.email], '[천원경매] Outbid Notification', html)
 
 
-class User(CRUDMixin, db.Model):
+class User(CRUDMixin, db.Model, UserMixin):
 
     __tablename__ = 'users'
 
     registered_at = db.Column(db.DateTime(timezone=False))
+    social_id = db.Column(db.String, index=True)
 
-    family_name = db.Column(db.String)
-    given_name = db.Column(db.String)
+    family_name = db.Column(db.String, nullable=True)
+    given_name = db.Column(db.String, nullable=True)
     email = db.Column(db.String)
-    organization = db.Column(db.String)
+    organization = db.Column(db.String, nullable=True)
 
     auctions = db.relationship('Auction', backref='seller', lazy='dynamic')
 
@@ -333,3 +342,19 @@ class User(CRUDMixin, db.Model):
         url = 'https://www.gravatar.com/avatar/{0}?size=40'.format(digest)
 
         return url
+
+    # def is_authenticated(self):
+    #     return True
+
+    # def is_active(self):
+    #     return True
+
+    # def is_anonymous(self):
+    #     return False
+
+    # def get_id(self):
+    #     return str(self.id)
+
+    def is_authorized_seller(self):
+        return self.data is not None \
+            and self.data.get('authorized_seller', False)

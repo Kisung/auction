@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
 import os
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 
-from auction.forms import BidForm, ConfirmBidForm
+from auction.forms import BidForm, ConfirmBidForm, CreateAuctionForm
 from auction.models import Auction, Bid, User
 from auction.utils import now
 
@@ -23,6 +25,30 @@ def list_auctions():
         'auctions': auctions,
     }
     return render_template('list_auctions.html', **context)
+
+
+@main_module.route('/actions/new', methods=['GET', 'POST'])
+@login_required
+def create_auction():
+    if not current_user.is_authorized_seller():
+        return 'Unauthorized seller', 403
+
+    form = CreateAuctionForm(request.form)
+    if form.validate_on_submit():
+        starts_at = now()
+        auction = Auction.create(
+            title=form.title.data,
+            description=form.description.data,
+            starts_at=starts_at,
+            ends_at=starts_at + timedelta(hours=form.duration.data),
+            seller_id=current_user.id,
+        )
+        return redirect(url_for('main.view_auction', auction_id=auction.id))
+
+    context = {
+        'form': form,
+    }
+    return render_template('create_auction.html', **context)
 
 
 @main_module.route('/auctions/<int:auction_id>')
@@ -159,6 +185,12 @@ def view_sold_notification(auction_id):
 
     auction = Auction.query.get_or_404(auction_id)
     return render_sold_notification(auction)
+
+
+@main_module.route('/sellers/register')
+def register_seller():
+    context = {}
+    return render_template('register_seller.html', **context)
 
 
 def parse_price(value, currency='KRW'):

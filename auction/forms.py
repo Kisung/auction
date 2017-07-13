@@ -1,11 +1,16 @@
+from datetime import datetime
+import re
 from random import randint
 
-from wtforms import BooleanField, Form, StringField
-from wtforms.fields.html5 import EmailField
+from flask_wtf import Form
+from wtforms import BooleanField, PasswordField, SelectField, StringField
+from wtforms.fields.html5 import DateTimeField, EmailField
 from wtforms.validators import DataRequired, Email, ValidationError
 
 from auction.models import Auction
 
+
+# TODO: Move these validators somewhere else
 
 class ValidPrice(object):
 
@@ -24,13 +29,23 @@ class ValidPrice(object):
 
         if price < auction.outbidding_price:
             raise ValidationError(
-                'Bidding price must be equal to or greater than the outbidding '
-                'price ({})'.format(auction.outbidding_price))
+                'Bidding price must be equal to or greater than the '
+                'outbidding price ({})'.format(auction.outbidding_price))
 
         bidding_unit = Auction.bidding_price_unit(price)
         if price % bidding_unit != 0:
             raise ValidationError(
                 'Price must be an increment of {}'.format(bidding_unit))
+
+
+class ValidGDocsURL(object):
+
+    pattern = r'https://docs.google.com/document/d/[0-9A-Za-z_-]+/pub'
+
+    def __call__(self, form, field):
+        if not re.match(self.pattern, field.data):
+            raise ValidationError(
+                '{0} is not a valid Google Docs URL'.format(field.data))
 
 
 # NOTE: Is there any way to automatically generate this form from the model?
@@ -45,8 +60,31 @@ class BidForm(Form):
     def __init__(self, formdata=None, obj=None, prefix='', auction=None,
                  **kwargs):
         self.auction = auction
-        super(BidForm, self).__init__(formdata, obj, prefix, **kwargs)
+        super(BidForm, self).__init__(formdata=formdata, obj=obj,
+                                      prefix=prefix, **kwargs)
 
 
 class ConfirmBidForm(Form):
     code = StringField('', [DataRequired()], _name='code')
+
+
+class CreateAuctionForm(Form):
+    title = StringField('상품명', [DataRequired()], _name='title')
+    description = StringField(
+        '상품 설명 (Google Docs)', [DataRequired(), ValidGDocsURL()],
+        _name='description')
+    starts_at = DateTimeField(
+        '시작일', [DataRequired()], _name='starts_at',
+        default=datetime.utcnow())
+    duration = SelectField(
+        '경매 기간', [DataRequired()],
+        coerce=int,
+        choices=[
+            (4, '4시간'), (8, '8시간'),
+            (24, '1일'), (48, '2일'), (72, '3일')],
+        default=24,
+    )
+
+class LoginForm(Form):
+    email = EmailField('이메일', [DataRequired()], _name='email')
+    password = PasswordField('비밀번호', [DataRequired()], _name='password')
