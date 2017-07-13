@@ -65,6 +65,7 @@ def make_auction(make_user):
             starts_at=starts_at,
             ends_at=starts_at + timedelta(hours=24),
             seller_id=seller.id,
+            description='https://docs.google.com/document/d/_/pub'
         )
     return make
 
