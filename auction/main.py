@@ -108,7 +108,8 @@ def create_bid():
         'auction': auction,
         'form': form,
     }
-    return render_template('create_bid.html', **context)
+    resp_code = 200 if request.method == 'GET' or form.validate() else 400
+    return render_template('create_bid.html', **context), resp_code
 
 
 @main_module.route('/bids/<int:bid_id>/confirm')
