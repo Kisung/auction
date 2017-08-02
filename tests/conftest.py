@@ -14,6 +14,7 @@ def app(request):
     settings_override = {
         'TESTING': True,
         'SERVER_NAME': 'localhost',
+        'WTF_CSRF_ENABLED': False,
     }
     settings_override['SQLALCHEMY_DATABASE_URI'] = os.environ['TEST_DB_URL']
     app = create_app(__name__, config=settings_override)
