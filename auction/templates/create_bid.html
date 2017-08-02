@@ -27,6 +27,7 @@
 
 <form class="ui form" method="post"
   action="{{ url_for('main.create_bid', auction_id=auction.id) }}">
+  {{ form.csrf_token }}
   <input type="hidden" name="auction_id" value="{{ auction.id }}"/>
 
   <div class="two fields">
